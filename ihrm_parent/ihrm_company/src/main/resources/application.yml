@@ -1,6 +1,6 @@
 #服务配置
 server:
-  port: 9001
+  port: 9010
 #spring配置
 spring:
   #1.应用配置
@@ -8,8 +8,8 @@ spring:
     name: ihrm-company #指定服务名
   #2.数据库连接池
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ihrm?useUnicode=true&characterEncoding=utf8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ihrm?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: root
     password: root1234
   #3.JPA

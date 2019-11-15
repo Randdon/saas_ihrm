@@ -2,6 +2,7 @@ package com.ihrm.company.service;
 
 import com.ihrm.company.dao.DepartmentDao;
 import com.ihrm.domain.company.Department;
+import com.zhouyuan.saas.ihrm.service.BaseService;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,7 +15,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Service
-public class DepartmentService {
+public class DepartmentService extends BaseService {
 
     @Autowired
     private DepartmentDao departmentDao;
@@ -58,19 +59,26 @@ public class DepartmentService {
      * 4.查询全部部门列表
      */
     public List<Department> findAll(String companyId) {
-        Specification<Department> specification = new Specification<Department>() {
-            /**
+/*        Specification<Department> specification = new Specification<Department>() {
+            *//**
              * 用户构造查询条件
              *      root   ：包含了所有的对象数据
              *      cq     ：高级查询，一般不用
              *      cb     ：构造查询条件
-             */
+             *//*
             @Override
             public Predicate toPredicate(Root<Department> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 return criteriaBuilder.equal(root.get("companyId").as(String.class),companyId);
             }
-        };
-        return departmentDao.findAll(specification);
+        };*/
+        /**
+         * 用户构造查询条件
+         *      1.只查询companyId
+         *      2.很多的地方都需要根据companyId查询
+         *      3.很多的对象中都具有companyId
+         * 抽为BaseService里的公共方法
+         */
+        return departmentDao.findAll(getSpecification(companyId));
     }
 
     /**

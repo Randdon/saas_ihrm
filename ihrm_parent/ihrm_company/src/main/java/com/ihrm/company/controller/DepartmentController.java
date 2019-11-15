@@ -5,6 +5,7 @@ import com.ihrm.company.service.DepartmentService;
 import com.ihrm.domain.company.Company;
 import com.ihrm.domain.company.Department;
 import com.ihrm.domain.company.response.DeptListResult;
+import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 //3.设置父路径
 @RequestMapping(value="/company")   //  company/deparment
-public class DepartmentController {
+public class DepartmentController extends BaseController {
 
     @Autowired
     private DepartmentService departmentService;
@@ -31,7 +32,12 @@ public class DepartmentController {
     @RequestMapping(value="/department",method = RequestMethod.POST)
     public Result save(@RequestBody Department department) {
         //1.设置保存的企业id
-        String companyId = "1";
+        /**
+         * String companyId = "1";
+         * 因为该Controller继承了BaseController，所以在执行该controller的每个方法前都会先执行BaseController里@ModelAttribute注解的方法
+         * 所以不用在每个方法里再新构造companyId了，直接用BaseController里的companyId即可
+         */
+
         /**
          * 企业id：目前使用固定值1，以后会解决
          */
@@ -49,7 +55,7 @@ public class DepartmentController {
     @RequestMapping(value="/department",method = RequestMethod.GET)
     public Result findAll() {
         //1.指定企业id
-        String companyId = "1";
+        //String companyId = "1";
 
         Company company = companyService.findById(companyId);
         //2.完成查询

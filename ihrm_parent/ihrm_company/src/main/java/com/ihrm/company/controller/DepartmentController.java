@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.List;
 
 //1.解决跨域
@@ -48,6 +50,7 @@ public class DepartmentController extends BaseController {
 
         LOGGER.info("测试BaseController里的setRequestAndResponse方法是否能获取到该save方法的reques参数：{}",request.getParameter("name"));
         department.setCompanyId(companyId);
+        department.setCreateTime(new Date());
         //2.调用service完成保存企业
         departmentService.save(department);
         //3.构造返回结果

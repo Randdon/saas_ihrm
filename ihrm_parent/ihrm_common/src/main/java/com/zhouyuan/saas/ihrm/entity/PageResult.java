@@ -3,7 +3,14 @@ package com.zhouyuan.saas.ihrm.entity;
 import java.util.List;
 
 public class PageResult<T> {
+    /**
+     * 总条数
+     */
     private Long total;
+
+    /**
+     * 数据列表
+     */
     private List<T> rows;
 
     public PageResult(Long total, List<T> rows) {

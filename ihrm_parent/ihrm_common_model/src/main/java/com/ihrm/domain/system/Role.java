@@ -1,8 +1,6 @@
 package com.ihrm.domain.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,8 +9,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "pe_role")
-@Getter
-@Setter
 public class Role implements Serializable {
     private static final long serialVersionUID = 594829320797158219L;
     @Id
@@ -29,6 +25,54 @@ public class Role implements Serializable {
      * 企业id
      */
     private String companyId;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
 
     @JsonIgnore
     @ManyToMany(mappedBy="roles")  //不维护中间表

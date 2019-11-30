@@ -50,6 +50,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value="/user",method = RequestMethod.GET)
     public Result findAll(int size, int page, @RequestParam Map map) {
+        map.put("companyId",companyId);
         Page users = userService.findAll(map,page,size);
         //构造返回结果
         PageResult pageResult = new PageResult(users.getTotalElements(),users.getContent());

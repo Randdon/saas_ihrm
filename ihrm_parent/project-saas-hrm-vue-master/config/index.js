@@ -3,7 +3,7 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
-
+//多个不同微服务地址请求时的代理配置
 module.exports = {
   dev: {
     // Paths
@@ -19,6 +19,11 @@ module.exports = {
         }
       },
       //用户信息请求的远程服务
+      /**
+       * 当请求的地址和此处冒号前面的配置匹配到时，如'/api/sys/user'就会匹配到，则将原请求地址增添到target后，即形成
+       * 新的目的请求地址：'http://localhost:8186/sys/api/sys/user'，然而pathRewrite配置项，此处又会将路径根据正则重写，
+       * 即将匹配到^/api/sys'的替换为空，所以最终路径就是:http://localhost:8186/sys/user
+       */
       '/api/sys': {
         target: 'http://localhost:8186/sys/',
         changeOrigin: true,

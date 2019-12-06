@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class PermissionApi implements Serializable {
     private static final long serialVersionUID = -1803315043290784820L;
     /**
-     * 主键
+     * 主键，同权限ID
      */
     @Id
     private String id;

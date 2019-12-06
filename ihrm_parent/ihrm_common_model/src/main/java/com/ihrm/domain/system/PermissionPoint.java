@@ -17,7 +17,7 @@ public class PermissionPoint implements Serializable {
     private static final long serialVersionUID = -1002411490113957485L;
 
     /**
-     * 主键
+     * 主键，同权限ID
      */
     @Id
     private String id;

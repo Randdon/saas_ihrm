@@ -1,6 +1,13 @@
 package com.zhouyuan.saas.ihrm.ihrm_system;
 
+import com.ihrm.domain.system.User;
+import com.ihrm.system.dao.UserDao;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @description: Integer的值在-128到127时，Integer对象是在IntegerCache.cache产生，会复用已有对象，也就是说，
@@ -11,6 +18,9 @@ import org.junit.Test;
  * @create: 2019-11-29 11:24
  **/
 public class JavaUnitTest extends IhrmSystemApplicationTests{
+
+    @Autowired
+    UserDao userDao;
 
     @Test
     public void test(){
@@ -32,5 +42,16 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
         System.out.println(integer == integer1);
         System.out.println(integer.intValue() == integer1.intValue());
         System.out.println(integer.equals(integer1));
+    }
+
+    @Test
+    public void jpaTest(){
+        List<String> ids = new ArrayList<>(3);
+        ids.add("1063705482939731968");
+        Optional<User> byId = userDao.findById("1063705482939731968");
+        System.out.println(byId.get());
+        //List<String> ids = Arrays.asList("1063705482939731968", "1075383135459430400", "1075383135371350016");
+        List<User> list = userDao.findAllById(ids);
+        System.out.println(list.size());
     }
 }

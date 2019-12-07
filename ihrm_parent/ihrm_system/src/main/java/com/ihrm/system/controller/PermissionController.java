@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 //1.解决跨域
@@ -46,16 +47,14 @@ public class PermissionController extends BaseController {
     }
 
     /**
-     * 查询权限的部门列表
+     * 查询权限列表
      * 指定权限id
      */
     @RequestMapping(value="/permission",method = RequestMethod.GET)
-    public Result findAll(int size, int page, @RequestParam Map map) {
-        map.put("companyId",companyId);
-        Page permissions = permissionService.findAll(map,page,size);
+    public Result findAll(@RequestParam Map map) {
+        List permissions = permissionService.findAll(map);
         //构造返回结果
-        PageResult pageResult = new PageResult(permissions.getTotalElements(),permissions.getContent());
-        return new Result(ResultCode.SUCCESS,pageResult);
+        return new Result(ResultCode.SUCCESS,permissions);
     }
 
     /**
@@ -75,7 +74,11 @@ public class PermissionController extends BaseController {
         //1.设置修改的权限id
         map.put("id",id);
         //2.调用service更新
-        permissionService.update(map);
+        try {
+            permissionService.update(map);
+        } catch (Exception e) {
+            LOGGER.error("权限更新失败：{}",e);
+        }
         return new Result(ResultCode.SUCCESS);
     }
 

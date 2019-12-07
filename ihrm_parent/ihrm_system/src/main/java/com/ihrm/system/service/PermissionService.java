@@ -12,8 +12,6 @@ import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -130,39 +128,44 @@ public class PermissionService {
 
     /**
      * 查询权限列表
+     * type      : 查询全部权限列表type：0：菜单 + 按钮（权限点） 1：菜单2：按钮（权限点）3：API接口
+     * enVisible : 0：查询所有saas平台的最高权限，1：查询企业的权限
+     * pid ：父id
      * @return
      */
-    public Page<Permission> findAll(Map<String,Object> predicateParams, int page, int size){
+    public List<Permission> findAll(Map<String,Object> predicateParams){
 
         //1. 构造查询条件
         Specification<Permission> specification = new Specification<Permission>() {
             @Override
             public Predicate toPredicate(Root<Permission> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>(predicateParams.size());
-                //根据请求的companyId构造查询条件
-                if (!StringUtils.isEmpty(predicateParams.get("companyId"))){
-                    predicates.add(criteriaBuilder.equal(root.get("companyId").as(String.class),predicateParams.get("companyId")));
+                //根据请求的父id构造查询条件
+                if (!StringUtils.isEmpty(predicateParams.get("pid"))){
+                    predicates.add(criteriaBuilder.equal(root.get("pid").as(String.class),predicateParams.get("pid")));
                 }
-                //根据请求的部门id构造查询条件
-                if (!StringUtils.isEmpty(predicateParams.get("departmentId"))){
-                    predicates.add(criteriaBuilder.equal(root.get("departmentId").as(String.class),predicateParams.get("departmentId")));
+                //根据请求的enVisible构造查询条件
+                if (!StringUtils.isEmpty(predicateParams.get("enVisible"))){
+                    predicates.add(criteriaBuilder.equal(root.get("enVisible").as(String.class),predicateParams.get("enVisible")));
                 }
-                //根据是否分配部门构造查询条件
-                if(!StringUtils.isEmpty(predicateParams.get("hasDept"))) {
-                    //根据请求的hasDept判断  是否分配部门 0未分配（departmentId = null），1 已分配 （departmentId ！= null）
-                    if("0".equals((String) predicateParams.get("hasDept"))) {
-                        predicates.add(criteriaBuilder.isNull(root.get("departmentId")));
+                //根据权限类型构造查询条件
+                if(!StringUtils.isEmpty(predicateParams.get("type"))) {
+                    String type = predicateParams.get("type").toString();
+                    CriteriaBuilder.In<Object> in = criteriaBuilder.in(root.get("type"));
+                    if("0".equals(type)) {
+                        in.value(1).value(2);
                     }else {
-                        predicates.add(criteriaBuilder.isNotNull(root.get("departmentId")));
+                        in.value(Integer.parseInt(type));
                     }
+                    predicates.add(in);
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };
 
-        //2.分页 page-1是因为jpa的分页是从0开始的
-        Page<Permission> pagePermissions = permissionDao.findAll(specification, PageRequest.of(page - 1, size));
-        return pagePermissions;
+        //2.数据库查询
+        List<Permission> permissions = permissionDao.findAll(specification);
+        return permissions;
     }
 
 }

@@ -8,12 +8,15 @@ import com.ihrm.system.dao.PermissionApiDao;
 import com.ihrm.system.dao.PermissionDao;
 import com.ihrm.system.dao.PermissionMenuDao;
 import com.ihrm.system.dao.PermissionPointDao;
+import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import com.zhouyuan.saas.ihrm.exception.CommonException;
 import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional //因为很多方法中都是涉及多个表的操作，所以加上该事务注解
 public class PermissionService {
     @Autowired
     PermissionDao permissionDao;
@@ -66,6 +70,8 @@ public class PermissionService {
                 permissionApi.setId(id);
                 permissionApiDao.save(permissionApi);
                 break;
+            default:
+                throw new CommonException(ResultCode.FAIL);
         }
         //调用dao保存权限
         permissionDao.save(permission);
@@ -106,6 +112,8 @@ public class PermissionService {
                 permissionApi.setId(permission.getId());
                 permissionApiDao.save(permissionApi);
                 break;
+            default:
+                throw new CommonException(ResultCode.FAIL);
         }
 
         //3.更新权限
@@ -115,15 +123,52 @@ public class PermissionService {
     /**
      * 删除权限
      */
-    public void deleteById(String id){
-        permissionDao.deleteById(id);
+    public void deleteById(String id) throws CommonException {
+        Permission permission = permissionDao.findById(id).get();
+        permissionDao.delete(permission);
+        Integer type = permission.getType();
+        switch (type){
+            case PermissionConstants.PY_MENU :
+                permissionMenuDao.deleteById(id);
+                break;
+            case PermissionConstants.PY_POINT:
+                permissionPointDao.deleteById(id);
+                break;
+            case PermissionConstants.PY_API:
+                permissionApiDao.deleteById(id);
+                break;
+            default:
+                throw new CommonException(ResultCode.FAIL);
+        }
     }
 
     /**
      * 根据id查询权限
+     * @return
      */
-    public Permission findById(String id){
-        return permissionDao.findById(id).get();
+    public Map<String, Object> findById(String id) throws CommonException {
+        Permission permission = permissionDao.findById(id).get();
+        Integer type = permission.getType();
+
+        Object resourcePerm = null;
+        switch (type){
+            case PermissionConstants.PY_MENU :
+                resourcePerm = permissionMenuDao.findById(id);
+                break;
+            case PermissionConstants.PY_POINT:
+                resourcePerm = permissionPointDao.findById(id);
+                break;
+            case PermissionConstants.PY_API:
+                resourcePerm = permissionApiDao.findById(id);
+                break;
+            default:
+                throw new CommonException(ResultCode.FAIL);
+        }
+
+        Map<String,Object> result = BeanMapUtils.beanToMap(resourcePerm);
+        Map<String, Object> permssionMap = BeanMapUtils.beanToMap(permission);
+        result.putAll(permssionMap);
+        return result;
     }
 
     /**

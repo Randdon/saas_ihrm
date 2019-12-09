@@ -6,6 +6,7 @@ import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import com.zhouyuan.saas.ihrm.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +63,13 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value="/permission/{id}",method = RequestMethod.GET)
     public Result findById(@PathVariable(value="id") String id) {
-        Permission permission = permissionService.findById(id);
-        return new Result(ResultCode.SUCCESS,permission);
+        Map<String, Object> result = null;
+        try {
+            result = permissionService.findById(id);
+        } catch (CommonException e) {
+            LOGGER.error("权限查询失败：{}",e);
+        }
+        return new Result(ResultCode.SUCCESS,result);
     }
 
     /**
@@ -87,7 +93,11 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value="/permission/{id}",method = RequestMethod.DELETE)
     public Result delete(@PathVariable(value="id") String id) {
-        permissionService.deleteById(id);
+        try {
+            permissionService.deleteById(id);
+        } catch (CommonException e) {
+            LOGGER.error("权限删除失败：{}",e);
+        }
         return new Result(ResultCode.SUCCESS);
     }
 

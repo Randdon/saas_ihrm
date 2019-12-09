@@ -153,13 +153,13 @@ public class PermissionService {
         Object resourcePerm = null;
         switch (type){
             case PermissionConstants.PY_MENU :
-                resourcePerm = permissionMenuDao.findById(id);
+                resourcePerm = permissionMenuDao.findById(id).get();
                 break;
             case PermissionConstants.PY_POINT:
-                resourcePerm = permissionPointDao.findById(id);
+                resourcePerm = permissionPointDao.findById(id).get();
                 break;
             case PermissionConstants.PY_API:
-                resourcePerm = permissionApiDao.findById(id);
+                resourcePerm = permissionApiDao.findById(id).get();
                 break;
             default:
                 throw new CommonException(ResultCode.FAIL);

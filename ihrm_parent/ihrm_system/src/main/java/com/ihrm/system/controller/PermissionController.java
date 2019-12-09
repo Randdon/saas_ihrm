@@ -1,19 +1,15 @@
 package com.ihrm.system.controller;
 
-import com.ihrm.domain.system.Permission;
 import com.ihrm.system.service.PermissionService;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
-import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +38,7 @@ public class PermissionController extends BaseController {
             permissionService.add(map);
         } catch (Exception e) {
             LOGGER.error("权限保存失败：{}",e);
+            return new Result(ResultCode.FAIL);
         }
         //3.构造返回结果
         return new Result(ResultCode.SUCCESS);
@@ -68,6 +65,7 @@ public class PermissionController extends BaseController {
             result = permissionService.findById(id);
         } catch (CommonException e) {
             LOGGER.error("权限查询失败：{}",e);
+            return new Result(ResultCode.FAIL);
         }
         return new Result(ResultCode.SUCCESS,result);
     }
@@ -84,6 +82,7 @@ public class PermissionController extends BaseController {
             permissionService.update(map);
         } catch (Exception e) {
             LOGGER.error("权限更新失败：{}",e);
+            return new Result(ResultCode.FAIL);
         }
         return new Result(ResultCode.SUCCESS);
     }
@@ -97,6 +96,7 @@ public class PermissionController extends BaseController {
             permissionService.deleteById(id);
         } catch (CommonException e) {
             LOGGER.error("权限删除失败：{}",e);
+            return new Result(ResultCode.FAIL);
         }
         return new Result(ResultCode.SUCCESS);
     }

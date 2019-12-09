@@ -43,13 +43,16 @@ public class Permission implements Serializable {
     /**
      * 企业可见状态
      */
-    private Integer enVisible;
+    private String enVisible;
 
     public Permission(String name, Integer type, String code, String description) {
         this.name = name;
         this.type = type;
         this.code = code;
         this.description = description;
+    }
+
+    public Permission() {
     }
 
     public String getId() {
@@ -100,11 +103,11 @@ public class Permission implements Serializable {
         this.pid = pid;
     }
 
-    public Integer getEnVisible() {
+    public String getEnVisible() {
         return enVisible;
     }
 
-    public void setEnVisible(Integer enVisible) {
+    public void setEnVisible(String enVisible) {
         this.enVisible = enVisible;
     }
 }

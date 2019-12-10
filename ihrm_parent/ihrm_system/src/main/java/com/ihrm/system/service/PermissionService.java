@@ -121,7 +121,10 @@ public class PermissionService {
     }
 
     /**
-     * 删除权限
+     *  //1.删除权限
+     *  //2.删除权限对应的资源
+     * @param id
+     * @throws CommonException
      */
     public void deleteById(String id) throws CommonException {
         Permission permission = permissionDao.findById(id).get();
@@ -144,6 +147,9 @@ public class PermissionService {
 
     /**
      * 根据id查询权限
+     *      //1.查询权限
+     *      //2.根据权限的类型查询资源
+     *      //3.构造map集合
      * @return
      */
     public Map<String, Object> findById(String id) throws CommonException {

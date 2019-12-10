@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 //1.解决跨域
@@ -27,6 +28,22 @@ public class UserController extends BaseController {
     private UserService userService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
+    /**
+     * 分配角色
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/user/assignRoles",method = RequestMethod.PUT)
+    public Result assignRoles(@RequestParam Map<String,Object> map){
+        //1.获取被分配的用户id
+        String userId = map.get("id").toString();
+        //2.获取到角色的id列表
+        List<String> roleIds = (List<String>) map.get("roleIds");
+        //3.调用service完成角色分配
+        userService.assignRoles(userId,roleIds);
+        return new Result(ResultCode.SUCCESS);
+    }
 
     /**
      * 保存

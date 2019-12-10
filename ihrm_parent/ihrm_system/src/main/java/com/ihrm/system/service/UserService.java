@@ -1,6 +1,8 @@
 package com.ihrm.system.service;
 
+import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
+import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -24,6 +28,8 @@ public class UserService {
     UserDao userDao;
     @Autowired
     IdWorker idWorker;
+    @Autowired
+    RoleDao roleDao;
 
     /**
      * 保存用户
@@ -109,4 +115,19 @@ public class UserService {
         return pageUsers;
     }
 
+    /**
+     * 为用户分配角色
+     * @param userId
+     * @param roleIds
+     */
+    public void assignRoles(String userId, List<String> roleIds) {
+        //1.根据id查询用户
+        User user = userDao.findById(userId).get();
+        //2.设置用户的角色集合
+        Set<Role> roles = roleDao.findAllById(roleIds).stream().collect(Collectors.toSet());
+        //设置用户和角色集合的关系
+        user.setRoles(roles);
+        //3.更新用户：如果userid是表中没有的，则会入库bs_user和pe_user_role两张表，如果userid已存在，则只入库pe_user_role表
+        userDao.save(user);
+    }
 }

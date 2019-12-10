@@ -1,6 +1,7 @@
 package com.zhouyuan.saas.ihrm.ihrm_system;
 
 import com.ihrm.domain.system.User;
+import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
 
     @Autowired
     UserDao userDao;
+    @Autowired
+    RoleDao roleDao;
 
     @Test
     public void test(){
@@ -53,5 +56,22 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
         //List<String> ids = Arrays.asList("1063705482939731968", "1075383135459430400", "1075383135371350016");
         List<User> list = userDao.findAllById(ids);
         System.out.println(list.size());
+    }
+
+    /**
+     * jpa的多对多关系分为维护端和被维护端，删除维护端的记录会影响关联表中的记录
+     * 但是删除被维护端的记录不会影响关联表中的记录
+     */
+    @Test
+    public void jpaMany2ManyTest(){
+        /**
+         * 删除用户的同时也会删除用户_角色关联表
+         */
+        //userDao.deleteById("1066370498633486336");
+        /**
+         * 删除角色的时候不会删除用户_角色关联表
+         * 但会删除角色_权限关联表
+         */
+        roleDao.deleteById("1062944989845262336");
     }
 }

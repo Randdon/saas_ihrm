@@ -4,11 +4,22 @@ import com.ihrm.domain.system.User;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @description: Integer的值在-128到127时，Integer对象是在IntegerCache.cache产生，会复用已有对象，也就是说，
@@ -25,6 +36,7 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
     @Autowired
     RoleDao roleDao;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaUnitTest.class);
     @Test
     public void test(){
         integerTest(129);
@@ -63,6 +75,7 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
      * 但是删除被维护端的记录不会影响关联表中的记录
      */
     @Test
+    @Transactional
     public void jpaMany2ManyTest(){
         /**
          * 删除用户的同时也会删除用户_角色关联表
@@ -72,6 +85,92 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
          * 删除角色的时候不会删除用户_角色关联表
          * 但会删除角色_权限关联表
          */
-        roleDao.deleteById("1062944989845262336");
+        //roleDao.deleteById("1062944989845262336");
+
+        /**
+         * 在用户和角色关联的时候，比如用户（a）关联了两个角色（i和ii），那么在根据id查用户的时候，去看User实体里的roles角色Set集合，
+         * 里面会报错：Unable to evaluate the expression Method threw 'org.hibernate.LazyInitializationException' exception.
+         * 解决方案：加上    @Transactional注解
+         * 问题原因：见 https://blog.csdn.net/Randon_Renhai/article/details/103506030
+         */
+        User user = userDao.findById("1063705482939731968").get();
+        System.out.println(user.getRoles().size());
     }
+
+    @Test
+    public void timeStampTest(){
+        System.out.println(Instant.now().getEpochSecond());//秒
+        System.out.println(System.currentTimeMillis());//毫秒
+        System.out.println(Instant.now().getNano());
+        long timestamp = LocalDateTime.now().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+        System.out.println(timestamp);
+        long timeStamp = System.currentTimeMillis();
+        UUID uuid = UUID.randomUUID();
+        System.out.println(uuid.timestamp());
+        System.out.println(timeStamp);
+
+    }
+
+    @Test
+    public void FileName(){
+        File file = new File("D:\\projects\\dcc\\code\\dp-project-dcc\\pom.xml");
+        System.out.println(file.getName());
+    }
+
+    public int download(String fileId, boolean isEnclosure, HttpServletRequest request, HttpServletResponse response, String userId){
+
+        //根据fileID查询出文件路径
+        String filePath = "";
+        //TODO 需确认如何获取到文件系统的File对象
+        File file = new File(System.getenv("user.dir")+filePath);
+        BufferedInputStream bufferedInputStream = null;
+        OutputStream outputStream = null;
+        String fileName = file.getName();
+        try {
+            //处理文件名中文乱码和空格问题
+            if(request.getHeader("User-Agent").toUpperCase().indexOf("MSIE")>0){
+                fileName = URLEncoder.encode(fileName, "UTF-8");
+            }else {
+                fileName = new String((fileName.getBytes("UTF-8")), "ISO8859-1");
+            }
+            //fileName=fileName.replaceAll("\\+","%20");    //处理空格转为加号的问题
+            response.setHeader("content-type", "application/octet-stream");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename=\""
+                    + fileName
+                    + "\"");
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            bufferedInputStream = new BufferedInputStream(fileInputStream);
+            byte[] buff = new byte[1024];
+            int readResult = bufferedInputStream.read(buff);
+            outputStream = response.getOutputStream();
+            while (readResult != -1){
+                outputStream.write(buff,0,readResult);
+                outputStream.flush();
+                readResult = bufferedInputStream.read(buff);
+            }
+        } catch (FileNotFoundException e) {
+            LOGGER.error("文件下载时出错：{}",e);
+        } catch (IOException e) {
+            LOGGER.error("文件下载时出错：{}",e);
+        } finally {
+            if (null != bufferedInputStream){
+                try {
+                    bufferedInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("输入流关闭时发生异常：{}",e);
+                }
+            }
+            if (null != outputStream){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("输出流关闭时异常：{}",e);
+                }
+            }
+        }
+        return 0;
+    }
+
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 //2.声明restContoller
 @RestController
 //3.设置父路径
-@RequestMapping(value="/sys")   //  company/deparment
+@RequestMapping(value="/sys")
 public class UserController extends BaseController {
 
     @Autowired
@@ -62,7 +62,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 查询企业的部门列表
+     * 查询企业的用户列表
      * 指定企业id
      */
     @RequestMapping(value="/user",method = RequestMethod.GET)

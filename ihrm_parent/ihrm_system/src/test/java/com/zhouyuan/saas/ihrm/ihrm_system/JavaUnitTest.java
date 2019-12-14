@@ -1,5 +1,6 @@
 package com.zhouyuan.saas.ihrm.ihrm_system;
 
+import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
@@ -7,7 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,7 +75,7 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
      * 但是删除被维护端的记录不会影响关联表中的记录
      */
     @Test
-    @Transactional
+    //@Transactional
     public void jpaMany2ManyTest(){
         /**
          * 删除用户的同时也会删除用户_角色关联表
@@ -93,8 +93,33 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
          * 解决方案：加上    @Transactional注解
          * 问题原因：见 https://blog.csdn.net/Randon_Renhai/article/details/103506030
          */
+/*
         User user = userDao.findById("1063705482939731968").get();
+        System.out.println(user.getCompanyId());
+        //System.out.println(JSON.toJSONString(user));
+        System.out.println(user.getRoles().size());//懒加载——在getRole的时候才会去查role表
+        for (Role role:
+             user.getRoles()) {
+            System.out.println(role);
+            System.out.println(role.getName());
+            System.out.println(role.getUsers().size());
+        }
+        System.out.println(user.getRoles().iterator().next());
         System.out.println(user.getRoles().size());
+*/
+        roleDao.deleteById("1064098829009293312");
+/*
+        Role byId = roleDao.findById("1064098829009293312").get();
+        User user = userDao.findById("1063705482939731968").get();
+        Set<Role> roles = new HashSet<>(1);
+
+        roles.add(byId);
+        user.setRoles(roles);
+        userDao.save(user);
+        System.out.println(byId.getUsers().size());
+*/
+
+
     }
 
     @Test
@@ -173,4 +198,9 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
         return 0;
     }
 
+    @Test
+    public void findEmpty(){
+        List<Role> all = roleDao.findAll();
+        System.out.println(all.stream().findAny());
+    }
 }

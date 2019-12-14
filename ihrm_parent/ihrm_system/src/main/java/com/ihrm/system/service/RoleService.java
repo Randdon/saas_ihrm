@@ -1,133 +1,96 @@
 package com.ihrm.system.service;
 
+import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.Role;
-import com.ihrm.domain.system.User;
+import com.ihrm.system.dao.PermissionDao;
 import com.ihrm.system.dao.RoleDao;
-import com.ihrm.system.dao.UserDao;
+import com.zhouyuan.saas.ihrm.service.BaseService;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class RoleService extends BaseService {
     @Autowired
-    UserDao userDao;
+    RoleDao roleDao;
     @Autowired
     IdWorker idWorker;
     @Autowired
-    RoleDao roleDao;
+    PermissionDao permissionDao;
 
     /**
-     * 保存用户
-     * @param user
+     * 保存角色
+     * @param role
      */
-    public void add(User user){
+    public void add(Role role){
         //设置主键的值
         String id = idWorker.nextId()+"";
-        user.setPassword("123456");//设置初始密码
-        user.setEnableState(1);
-        user.setId(id);
-        //调用dao保存用户
-        userDao.save(user);
+        role.setId(id);
+        //调用dao保存角色
+        roleDao.save(role);
     }
 
     /**
-     * 更新用户
-     *  1.参数：User
-     *  2.根据id查询用户对象
+     * 更新角色
+     *  1.参数：Role
+     *  2.根据id查询角色对象
      *  3.设置修改的属性
      *  4.调用dao完成更新
      */
-    public void update(User user){
-        //1.根据id查询用户
-        User target = userDao.findById(user.getId()).get();
-        //2.设置用户属性
-        target.setUsername(user.getUsername());
-        target.setPassword(user.getPassword());
-        target.setDepartmentId(user.getDepartmentId());
-        target.setDepartmentName(user.getDepartmentName());
-        //3.更新用户
-        userDao.save(target);
+    public void update(Role role){
+        //1.根据id查询角色
+        Role target = roleDao.findById(role.getId()).get();
+        //2.设置角色属性
+        target.setName(role.getName());
+        target.setDescription(role.getDescription());
+        //3.更新角色
+        roleDao.save(target);
     }
 
     /**
-     * 删除用户
+     * 删除角色
      */
     public void deleteById(String id){
-        userDao.deleteById(id);
+        roleDao.deleteById(id);
     }
 
     /**
-     * 根据id查询用户
+     * 根据id查询角色
      */
-    public User findById(String id){
-        return userDao.findById(id).get();
+    public Role findById(String id){
+        return roleDao.findById(id).get();
     }
 
+    public List<Role> findAll(String companyId) {
+        return roleDao.findAll(getSpecification(companyId));
+    }
     /**
-     * 查询用户列表
+     * 分页查询角色列表
      * @return
      */
-    public Page<User> findAll(Map<String,Object> predicateParams, int page, int size){
-
-        //1. 构造查询条件
-        Specification<User> specification = new Specification<User>() {
-            @Override
-            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                List<Predicate> predicates = new ArrayList<>(predicateParams.size());
-                //根据请求的companyId构造查询条件
-                if (!StringUtils.isEmpty(predicateParams.get("companyId"))){
-                    predicates.add(criteriaBuilder.equal(root.get("companyId").as(String.class),predicateParams.get("companyId")));
-                }
-                //根据请求的部门id构造查询条件
-                if (!StringUtils.isEmpty(predicateParams.get("departmentId"))){
-                    predicates.add(criteriaBuilder.equal(root.get("departmentId").as(String.class),predicateParams.get("departmentId")));
-                }
-                //根据是否分配部门构造查询条件
-                if(!StringUtils.isEmpty(predicateParams.get("hasDept"))) {
-                    //根据请求的hasDept判断  是否分配部门 0未分配（departmentId = null），1 已分配 （departmentId ！= null）
-                    if("0".equals((String) predicateParams.get("hasDept"))) {
-                        predicates.add(criteriaBuilder.isNull(root.get("departmentId")));
-                    }else {
-                        predicates.add(criteriaBuilder.isNotNull(root.get("departmentId")));
-                    }
-                }
-                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
-        };
-
-        //2.分页 page-1是因为jpa的分页是从0开始的
-        Page<User> pageUsers = userDao.findAll(specification, PageRequest.of(page - 1, size));
-        return pageUsers;
+    public Page<Role> findByPage(String companyId, int page, int size){
+        return roleDao.findAll(getSpecification(companyId),PageRequest.of(page-1,size));
     }
 
     /**
-     * 为用户分配角色
-     * @param userId
-     * @param roleIds
+     * 为角色分配权限
+     * @param roleId
+     * @param permissionIds
      */
-    public void assignRoles(String userId, List<String> roleIds) {
-        //1.根据id查询用户
-        User user = userDao.findById(userId).get();
-        //2.设置用户的角色集合
-        Set<Role> roles = roleDao.findAllById(roleIds).stream().collect(Collectors.toSet());
-        //设置用户和角色集合的关系
-        user.setRoles(roles);
-        //3.更新用户：如果userid是表中没有的，则会入库bs_user和pe_user_role两张表，如果userid已存在，则只入库pe_user_role表
-        userDao.save(user);
+    public void assignRoles(String roleId, List<String> permissionIds) {
+        //1.根据id查询角色
+        Role role = roleDao.findById(roleId).get();
+        //2.设置角色的权限集合
+        Set<Permission> permissions = permissionDao.findAllById(permissionIds).stream().collect(Collectors.toSet());
+        //设置角色和权限集合的关系
+        role.setPermissions(permissions);
+        //3.更新角色：如果roleid是表中没有的，则会入库bs_role和pe_role_permission两张表，如果roleid已存在，则只入库pe_role_permission表
+        roleDao.save(role);
     }
 }

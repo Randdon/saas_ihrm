@@ -6,11 +6,13 @@ import com.ihrm.system.dao.PermissionDao;
 import com.ihrm.system.dao.RoleDao;
 import com.zhouyuan.saas.ihrm.service.BaseService;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
+import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,8 +88,14 @@ public class RoleService extends BaseService {
     public void assignRoles(String roleId, List<String> permissionIds) {
         //1.根据id查询角色
         Role role = roleDao.findById(roleId).get();
-        //2.设置角色的权限集合
+        //2.查找权限列表
         Set<Permission> permissions = permissionDao.findAllById(permissionIds).stream().collect(Collectors.toSet());
+        List<Permission> childApiPerms = new ArrayList<>(16);
+        permissions.stream().forEach(permission -> {
+            //查找每个权限所对应的子API权限
+            childApiPerms.addAll(permissionDao.findByTypeAndPid(PermissionConstants.PY_API,permission.getId()));
+        });
+        permissions.addAll(childApiPerms.stream().collect(Collectors.toSet()));
         //设置角色和权限集合的关系
         role.setPermissions(permissions);
         //3.更新角色：如果roleid是表中没有的，则会入库bs_role和pe_role_permission两张表，如果roleid已存在，则只入库pe_role_permission表

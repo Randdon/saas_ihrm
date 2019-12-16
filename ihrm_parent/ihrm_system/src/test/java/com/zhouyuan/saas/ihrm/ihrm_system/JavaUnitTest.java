@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,10 +18,8 @@ import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @description: Integer的值在-128到127时，Integer对象是在IntegerCache.cache产生，会复用已有对象，也就是说，
@@ -213,5 +212,23 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
         Role role = roleDao.findById("1062944989845262336").get();
         RoleResult roleResult = new RoleResult(role);
         roleResult.getPermIds().forEach(s -> System.out.println(s));
+    }
+
+    @Test
+    @Transactional
+    public void jpaUpdateTest(){
+        /**
+         * 单元测试这里无法修改中间表，但是com.ihrm.system.controller.RoleController#assignRoles(java.util.Map)可以
+         */
+        //1.根据id查询用户
+        User user = userDao.findById("1063705989926227968").get();
+        String[] roleIds = new String[]{"1064098935443951616","1064099035536822272"};
+        //2.设置用户的角色集合
+        Set<Role> roles = roleDao.findAllById(Arrays.asList(roleIds)).stream().collect(Collectors.toSet());
+        //设置用户和角色集合的关系
+        user.setRoles(roles);
+        //3.更新用户：如果userid是表中没有的，则会入库bs_user和pe_user_role两张表，如果userid已存在，则只入库pe_user_role表
+        userDao.save(user);
+        System.out.println("===============");
     }
 }

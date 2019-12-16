@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/role/assignPerms",method = RequestMethod.PUT)
-    public Result assignRoles(@RequestParam Map<String,Object> map){
+    public Result assignRoles(@RequestBody Map<String,Object> map){
         //1.获取被分配的角色id
         String roleId = map.get("id").toString();
         //2.获取到权限的id列表
@@ -84,6 +83,13 @@ public class RoleController extends BaseController {
         RoleResult roleResult = new RoleResult(role);
         return new Result(ResultCode.SUCCESS,roleResult);
     }
+
+    @RequestMapping(value="/role/list" ,method=RequestMethod.GET)
+    public Result findAll() {
+        List<Role> roleList = roleService.findAll(companyId);
+        return new Result(ResultCode.SUCCESS,roleList);
+    }
+
 
     /**
      * 修改Role

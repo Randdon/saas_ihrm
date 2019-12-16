@@ -1,17 +1,15 @@
-package com.ihrm.domain.system;
+package com.ihrm.domain.system.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ihrm.domain.system.Permission;
+import com.ihrm.domain.system.Role;
+import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@Entity
-@Table(name = "pe_role")
-public class Role implements Serializable {
+public class RoleResult implements Serializable {
     private static final long serialVersionUID = 594829320797158219L;
-    @Id
     private String id;
     /**
      * 角色名
@@ -25,6 +23,11 @@ public class Role implements Serializable {
      * 企业id
      */
     private String companyId;
+
+    /**
+     * 该角色所具有的权限id集合
+     */
+    private List<String> permIds;
 
     public String getId() {
         return id;
@@ -58,31 +61,16 @@ public class Role implements Serializable {
         this.companyId = companyId;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public List<String> getPermIds() {
+        return permIds;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setPermIds(List<String> permIds) {
+        this.permIds = permIds;
     }
 
-    public Set<Permission> getPermissions() {
-        return permissions;
+    public RoleResult(Role role) {
+        BeanUtils.copyProperties(role,this);
+        this.permIds = role.getPermissions().stream().map(Permission::getId).collect(Collectors.toList());
     }
-
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    @JsonIgnore
-    @ManyToMany(mappedBy="roles")  //不维护中间表
-    private Set<User> users = new HashSet<User>(0);//角色与用户   多对多
-
-
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(name="pe_role_permission",
-            joinColumns={@JoinColumn(name="role_id",referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="permission_id",referencedColumnName="id")})
-    private Set<Permission> permissions = new HashSet<Permission>(0);//角色与模块  多对多
 }

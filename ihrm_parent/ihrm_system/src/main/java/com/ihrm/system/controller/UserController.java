@@ -36,7 +36,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/user/assignRoles",method = RequestMethod.PUT)
-    public Result assignRoles(@RequestParam Map<String,Object> map){
+    public Result assignRoles(@RequestBody Map<String,Object> map){
         //1.获取被分配的用户id
         String userId = map.get("id").toString();
         //2.获取到角色的id列表

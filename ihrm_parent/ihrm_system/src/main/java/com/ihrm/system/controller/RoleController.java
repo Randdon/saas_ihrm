@@ -64,9 +64,9 @@ public class RoleController extends BaseController {
      * 指定企业id
      */
     @RequestMapping(value="/role",method = RequestMethod.GET)
-    public Result findAll(int size, int page, @RequestParam Map map) {
+    public Result findAll(int pagesize, int page, @RequestParam Map map) {
         map.put("companyId",companyId);
-        Page roles = roleService.findByPage(companyId,page,size);
+        Page roles = roleService.findByPage(companyId,page,pagesize);
         //构造返回结果
         PageResult pageResult = new PageResult(roles.getTotalElements(),roles.getContent());
         return new Result(ResultCode.SUCCESS,pageResult);

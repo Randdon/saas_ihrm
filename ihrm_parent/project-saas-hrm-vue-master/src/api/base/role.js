@@ -7,6 +7,6 @@ export const add = data => createAPI('/sys/role', 'post', data)
 export const update = data => createAPI(`/sys/role/${data.id}`, 'put', data)
 export const remove = data => createAPI(`/sys/role/${data.id}`, 'delete', data)
 export const detail = data => createAPI(`/sys/role/${data.id}`, 'get', data)
-export const assignPrem = data => createAPI(`/sys/role/assignPrem`, 'put', data)
+export const assignPrem = data => createAPI(`/sys/role/assignPerms`, 'put', data)
 export const findAll = data => createAPI(`/sys/role/list`,'get',data)
 

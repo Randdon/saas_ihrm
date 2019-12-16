@@ -7,6 +7,7 @@ import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import com.zhouyuan.saas.ihrm.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -107,5 +111,24 @@ public class UserController extends BaseController {
         return new Result(ResultCode.SUCCESS);
     }
 
-
+    /**
+     *
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "login",method = RequestMethod.POST)
+    public Result login(@RequestBody Map<String,String> map){
+        String mobile = map.get("mobile");
+        String password = map.get("password");
+        User user = userService.findByMobile(mobile);
+        if (null == user || !password.equals(user.getPassword())){
+            return new Result(ResultCode.MOBILEORPASSWORDERROR);
+        } else {
+            Map<String,Object> params = new HashMap<>(2);
+            params.put("companyId",user.getCompanyId());
+            params.put("companyName",user.getCompanyName());
+            String token = jwtUtils.createJwt(user.getId(), user.getUsername(), params);
+            return new Result(ResultCode.SUCCESS,token);
+        }
+    }
 }

@@ -130,4 +130,14 @@ public class UserService {
         //3.更新用户：如果userid是表中没有的，则会入库bs_user和pe_user_role两张表，如果userid已存在，则只入库pe_user_role表
         userDao.save(user);
     }
+
+    /**
+     * 根据电话号码查询用户
+     * @param mobile
+     * @return
+     */
+    public User findByMobile(String mobile){
+        User user = userDao.findByMobile(mobile);
+        return user;
+    }
 }

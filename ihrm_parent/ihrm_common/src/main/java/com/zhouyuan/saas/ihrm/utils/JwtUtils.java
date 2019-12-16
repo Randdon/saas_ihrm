@@ -5,6 +5,8 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
@@ -14,7 +16,8 @@ import java.util.Map;
  * @author: yuand
  * @create: 2019-12-16 16:42
  **/
-//@ConfigurationProperties(value = "jwt.config")
+@EnableConfigurationProperties(JwtUtils.class)
+@ConfigurationProperties(value = "jwt.config")
 public class JwtUtils {
 
     //签名私钥

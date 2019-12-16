@@ -236,6 +236,7 @@ public class User implements Serializable {
      *  JsonIgnore
      *     : 忽略json转化
      *     此注解作用是json序列化时将java bean中的一些属性忽略掉，序列化和反序列化都受影响。
+     *     Spring默认内置的即是jackson
      */
     @JsonIgnore
     @ManyToMany

@@ -1,6 +1,7 @@
 package com.ihrm.system.controller;
 
 import com.ihrm.domain.system.User;
+import com.ihrm.domain.system.response.UserResult;
 import com.ihrm.system.service.UserService;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
@@ -79,9 +80,10 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value="/user/{id}",method = RequestMethod.GET)
     public Result findById(@PathVariable(value="id") String id) {
-        //TODO 在回显用户时返回该用户已有的角色id组合（前台也要改）
         User user = userService.findById(id);
-        return new Result(ResultCode.SUCCESS,user);
+        //在回显用户时返回该用户已有的角色id组合（前台也要改）
+        UserResult userResult = new UserResult(user);
+        return new Result(ResultCode.SUCCESS,userResult);
     }
 
     /**

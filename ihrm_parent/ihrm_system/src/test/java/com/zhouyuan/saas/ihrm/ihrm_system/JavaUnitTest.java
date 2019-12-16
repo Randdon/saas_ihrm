@@ -2,6 +2,7 @@ package com.zhouyuan.saas.ihrm.ihrm_system;
 
 import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
+import com.ihrm.domain.system.response.RoleResult;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import org.junit.Test;
@@ -202,5 +203,15 @@ public class JavaUnitTest extends IhrmSystemApplicationTests{
     public void findEmpty(){
         List<Role> all = roleDao.findAll();
         System.out.println(all.stream().findAny());
+    }
+
+    @Test
+    public void jpaFindTest(){
+        /**
+         * 在此处会报懒加载异常，但是在com.ihrm.system.controller.RoleController#findById(java.lang.String)不会报
+         */
+        Role role = roleDao.findById("1062944989845262336").get();
+        RoleResult roleResult = new RoleResult(role);
+        roleResult.getPermIds().forEach(s -> System.out.println(s));
     }
 }

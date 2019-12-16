@@ -1,6 +1,7 @@
 package com.ihrm.system.controller;
 
 import com.ihrm.domain.system.Role;
+import com.ihrm.domain.system.response.RoleResult;
 import com.ihrm.system.service.RoleService;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
@@ -77,9 +78,11 @@ public class RoleController extends BaseController {
      */
     @RequestMapping(value="/role/{id}",method = RequestMethod.GET)
     public Result findById(@PathVariable(value="id") String id) {
-        //TODO 在回显角色时返回该角色已有的权限id组合（前台也要改），还有一个问题：在教程中没有加事务注解的情况下，查询用户时也能获取到和用户关联的角色集合，但是在dcc项目中，不加事务注解会报错，以及jsonignore注解在返回给前台时是不是会起作用，fastjson的注解需要确认在返回给前台时是否起作用
         Role role = roleService.findById(id);
-        return new Result(ResultCode.SUCCESS,role);
+        //在回显角色时返回该角色已有的权限id组合（前台也要改）
+        //TODO 问题：在此处没有加事务注解的情况下，查询用户时也能获取到和用户关联的角色集合，但是在单元测试中，不加事务注解会报懒加载异常
+        RoleResult roleResult = new RoleResult(role);
+        return new Result(ResultCode.SUCCESS,roleResult);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.ihrm.system.controller;
 
 import com.ihrm.domain.system.User;
+import com.ihrm.domain.system.response.ProfileResult;
 import com.ihrm.domain.system.response.UserResult;
 import com.ihrm.system.service.UserService;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
@@ -8,6 +9,7 @@ import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +114,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     *
+     * 用户登录获取token
      * @param map
      * @return
      */
@@ -130,5 +132,20 @@ public class UserController extends BaseController {
             String token = jwtUtils.createJwt(user.getId(), user.getUsername(), params);
             return new Result(ResultCode.SUCCESS,token);
         }
+    }
+
+    /**
+     * 登陆后紧接着获取用户信息（包含该用户所具有的权限信息）
+     * 前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格+token
+     * @return
+     */
+    @RequestMapping(value = "profile",method = RequestMethod.POST)
+    public Result profile(){
+        String authorization = request.getHeader("Authorization");
+        String token = authorization.replace("Bearer ","");
+        Claims claims = jwtUtils.parseJwt(token);
+        String userId = claims.getId();
+        User user = userService.findById(userId);
+        return new Result(ResultCode.SUCCESS,new ProfileResult(user));
     }
 }

@@ -7,6 +7,11 @@ Mock.setup({
   //timeout: '1000'
 })
 
+//如果发送请求的api路径匹配，拦截
+//第一个参数匹配的请求api路径，第二个参数匹配请求的方式，第三个参数相应数据如何替换
 Mock.mock(/\/table\/list\.*/, 'get', TableAPI.list)
-Mock.mock(/\/frame\/profile/, 'post', ProfileAPI.profile)
+/*
+//获取用户信息
+Mock.mock(/\/frame\/profile/, 'post', ProfileAPI.profile)//注释掉登录和用户信息的模拟数据接口
 Mock.mock(/\/frame\/login/, 'post', LoginAPI.login)
+*/

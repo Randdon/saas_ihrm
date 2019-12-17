@@ -1,8 +1,10 @@
 package com.ihrm.system.controller;
 
+import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.User;
 import com.ihrm.domain.system.response.ProfileResult;
 import com.ihrm.domain.system.response.UserResult;
+import com.ihrm.system.service.PermissionService;
 import com.ihrm.system.service.UserService;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
@@ -31,6 +33,8 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private PermissionService permissionService;
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -141,11 +145,27 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "profile",method = RequestMethod.POST)
     public Result profile(){
+        //从请求头中获取token
         String authorization = request.getHeader("Authorization");
         String token = authorization.replace("Bearer ","");
+        //解析token获取claims
         Claims claims = jwtUtils.parseJwt(token);
+        //从claims中获取userId
         String userId = claims.getId();
         User user = userService.findById(userId);
-        return new Result(ResultCode.SUCCESS,new ProfileResult(user));
+
+        //根据User构造ProfileResult
+        ProfileResult result = null;
+        if ("user".equals(user.getLevel())){
+            result = new ProfileResult(user);
+        }else {
+            Map<String,Object> map = new HashMap<>(1);
+            if ("coAdmin".equals(user.getLevel())){
+                map.put("enVisible",1);
+            }
+            List<Permission> permissions = permissionService.findAll(map);
+            result = new ProfileResult(user,permissions);
+        }
+        return new Result(ResultCode.SUCCESS, result);
     }
 }

@@ -1,13 +1,11 @@
 package com.ihrm.domain.system.response;
 
+import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
 import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @description: 用户信息返回实体
@@ -21,6 +19,29 @@ public class ProfileResult {
     private String company;
     private Map<String,Object> roles = new HashMap<>(16);
 
+    public ProfileResult(User user, List<Permission> permissions) {
+        this.mobile = user.getMobile();
+        this.username = user.getUsername();
+        this.company = user.getCompanyName();
+
+        Set<String> menus = new HashSet<>(16);
+        Set<String> points = new HashSet<>(16);
+        Set<String> apis = new HashSet<>(16);
+
+        permissions.stream().forEach(permission -> {
+            if (permission.getType().equals(PermissionConstants.PY_API)){
+                apis.add(permission.getCode());
+            } else if (permission.getType().equals(PermissionConstants.PY_POINT)){
+                points.add(permission.getCode());
+            } else {
+                menus.add(permission.getCode());
+            }
+        });
+
+        this.roles.put("apis",apis);
+        this.roles.put("menus",menus);
+        this.roles.put("points",points);
+    }
 
     public ProfileResult(User user) {
         this.mobile = user.getMobile();

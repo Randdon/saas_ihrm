@@ -1,5 +1,6 @@
 package com.zhouyuan.saas.ihrm.controller;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ public class BaseController {
     protected HttpServletResponse response;
     protected String companyId;
     protected String companyName;
+    //token解析结果
+    protected Claims claims;
 
     /**
      * 被@ModelAttribute注释的方法会在此controller每个方法执行前被执行
@@ -22,10 +25,16 @@ public class BaseController {
     public void setRequestAndResponse(HttpServletRequest request,HttpServletResponse response){
         this.request = request;
         this.response = response;
-        /**
-         * 目前先将companyId和companyName写死，后面会应用起来
-         */
-        this.companyId = "1";
-        this.companyName = "One Piece";
+        Object obj = request.getAttribute("user_claims");
+
+        if (null != obj){
+            this.claims = (Claims) obj;
+
+            /**
+             * 从token中获取companyId和companyName
+             */
+            this.companyId = claims.get("companyId",String.class);
+            this.companyName = claims.get("companyName",String.class);
+        }
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 
 //Springboot的包扫描
-@SpringBootApplication(scanBasePackages = "com.ihrm")
+@SpringBootApplication(scanBasePackages = "com")
 //jpa注解的扫描
 @EntityScan(value = "com.ihrm.domain.system")
 public class SystemApplication {

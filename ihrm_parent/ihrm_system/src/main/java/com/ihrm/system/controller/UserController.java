@@ -145,11 +145,13 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "profile",method = RequestMethod.POST)
     public Result profile(){
+/*
         //从请求头中获取token
         String authorization = request.getHeader("Authorization");
         String token = authorization.replace("Bearer ","");
         //解析token获取claims
         Claims claims = jwtUtils.parseJwt(token);
+*/
         //从claims中获取userId
         String userId = claims.getId();
         User user = userService.findById(userId);

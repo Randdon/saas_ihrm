@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 //Springboot的包扫描
 @SpringBootApplication(scanBasePackages = "com")
@@ -24,5 +25,11 @@ public class SystemApplication {
     @Bean
     public JwtUtils jwtUtils(){
         return new JwtUtils();
+    }
+
+    //解决加了拦截器后，jpa多对多映射懒加载no session的问题
+    @Bean
+    public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+        return new OpenEntityManagerInViewFilter();
     }
 }

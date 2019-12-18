@@ -54,6 +54,9 @@
               </router-link>
               <el-button @click="handleRole(scope.row)" type="text" size="small">分配角色</el-button>
               <el-button v-if="show('point-user-delete')" @click="handleDelete(scope.row)" type="text" size="small">删除</el-button>
+<!--
+              <el-button @click="handleDelete(scope.row)" type="text" size="small">删除</el-button>
+-->
             </template>
           </el-table-column>
         </el-table>

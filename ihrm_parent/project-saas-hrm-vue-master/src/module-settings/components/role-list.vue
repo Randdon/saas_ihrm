@@ -39,6 +39,7 @@
         <el-button type="primary" @click="saveOrUpdate">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- :check-strictly="true"，当父节点下的子节点不全选中时，也会选中父节点，否则即是只有全选中子节点才会选中父节点 -->
     <el-dialog :title="'为【'+formData.name+'】分配权限'" :visible.sync="permFormVisible" style="hight:100px;line-height:1px">
       <el-tree
         :data="treeData"
@@ -46,6 +47,7 @@
         show-checkbox
         node-key="id"
         ref="tree"
+        :check-strictly="true"
         :default-checked-keys="checkNodes"
         :props="{label:'name'}">
       </el-tree>

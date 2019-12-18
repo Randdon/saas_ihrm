@@ -11,6 +11,7 @@ import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.JwtUtils;
+import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 //1.解决跨域
 @CrossOrigin
@@ -111,7 +113,7 @@ public class UserController extends BaseController {
     /**
      * 根据id删除
      */
-    @RequestMapping(value="/user/{id}",method = RequestMethod.DELETE)
+    @RequestMapping(value="/user/{id}",method = RequestMethod.DELETE, name = "API-USER-DELETE")
     public Result delete(@PathVariable(value="id") String id) {
         userService.deleteById(id);
         return new Result(ResultCode.SUCCESS);
@@ -130,9 +132,18 @@ public class UserController extends BaseController {
         if (null == user || !password.equals(user.getPassword())){
             return new Result(ResultCode.MOBILEORPASSWORDERROR);
         } else {
+            //查询该用户拥有的所有api权限并写入到token中
+            StringBuilder sb = new StringBuilder(16);
+            user.getRoles().stream()
+                    .forEach(role -> role.getPermissions().stream()
+                            .filter(permission -> permission.getType().equals(PermissionConstants.PY_API))
+                            .forEach(permission -> sb.append(permission.getCode()).append(",")));
             Map<String,Object> params = new HashMap<>(2);
+            params.put("apis",sb.toString());
+
             params.put("companyId",user.getCompanyId());
             params.put("companyName",user.getCompanyName());
+            //构造token
             String token = jwtUtils.createJwt(user.getId(), user.getUsername(), params);
             return new Result(ResultCode.SUCCESS,token);
         }

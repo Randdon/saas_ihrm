@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @description: shiro框架授权测试类
+ * @description: shiro框架自定义realm域认证、授权测试类
  * @author: yuand
  * @create: 2019-12-18 14:50
  **/

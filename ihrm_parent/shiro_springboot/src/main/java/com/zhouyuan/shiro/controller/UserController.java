@@ -77,4 +77,11 @@ public class UserController {
             return "用户名或密码错误";
         }
     }
+
+    //删除
+    @RequestMapping(value = "/autherror")
+    public String auth(int code) {
+        return code == 1 ? "未登录" : "未授权";
+    }
+
 }

@@ -4,10 +4,17 @@ import com.zhouyuan.shiro.domain.User;
 import com.zhouyuan.shiro.service.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * 自定义realm域
+ */
 public class CustomRealm extends AuthorizingRealm {
 
     @Autowired
@@ -17,9 +24,28 @@ public class CustomRealm extends AuthorizingRealm {
         super.setName("customRealm");
     }
 
+    /**
+     * 授权方法
+     *      操作的时候，判断用户是否具有响应的权限
+     *          先认证 -- 获取安全数据
+     *          再授权 -- 根据安全数据获取用户具有的所有操作权限
+     * @param principalCollection
+     * @return
+     */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
+        //1.获取已认证的用户数据
+        User user = (User) principalCollection.getPrimaryPrincipal();
+        Set<String> roles = new HashSet<>(16);//所有角色
+        Set<String> perms = new HashSet<>(16);//所有权限
+        user.getRoles().forEach(role -> {
+            roles.add(role.getName());
+            role.getPermissions().forEach(permission -> perms.add(permission.getCode()));
+        });
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.setRoles(roles);
+        info.setStringPermissions(perms);
+        return info;
     }
 
     /**

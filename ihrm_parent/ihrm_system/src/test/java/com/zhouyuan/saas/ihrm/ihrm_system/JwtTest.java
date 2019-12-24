@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Test;
 
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -50,5 +51,12 @@ public class JwtTest extends IhrmSystemApplicationTests {
         //解析获取自定义claim中的内容
         System.out.println(claims.get("companyId"));
         System.out.println(claims.get("companyName"));
+    }
+
+    @Test
+    public void base64Decode(){
+        //jwt采用base64加密
+        System.out.println(new String(Base64.getDecoder().decode("eyJhbGciOiJIUzI1NiJ9")));
+        System.out.println(new String(Base64.getDecoder().decode("eyJqdGkiOiIxODkzIiwic3ViIjoiQ2hhaXJtYW5NYW8iLCJpYXQiOjE1NzY0ODQ5OTMsImNvbXBhbnlJZCI6IjE4NzEwODkyNjM0IiwiY29tcGFueU5hbWUiOiJVdG9waWFuIn0")));
     }
 }

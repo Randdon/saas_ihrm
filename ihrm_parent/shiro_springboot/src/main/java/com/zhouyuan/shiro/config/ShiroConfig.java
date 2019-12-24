@@ -62,7 +62,11 @@ public class ShiroConfig {
          */
         Map<String,String> filterMap = new LinkedHashMap<>(16);
         //当前请求地址可以匿名访问
-        filterMap.put("/user/home","anon");
+        //filterMap.put("/user/home","anon");
+
+        //使用过滤器的形式配置请求地址的依赖权限，具有某种权限才能访问，不具备指定的权限，跳转到setUnauthorizedUrl地址
+        //filterMap.put("/user/home","perms[user-home]");
+        filterMap.put("/user/home","roles[系统管理员]");
         //当前请求地址必须认证之后可以访问
         filterMap.put("/user/**","authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);

@@ -3,6 +3,7 @@ package com.zhouyuan.shiro.demo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
@@ -53,5 +54,11 @@ public class ShiroTest03 {
         System.out.println("该用户是否具有ninja角色：" + subject.hasRole("ninja"));
         System.out.println("该用户是否具有kill权限：" + subject.isPermitted("kill"));
         System.out.println("该用户是否具有run权限：" + subject.isPermitted("run"));
+    }
+
+    @Test
+    public void hashmd5(){
+        String md5Hash = new Md5Hash("123456","zhangsan",3).toString();
+        System.out.println(md5Hash);
     }
 }

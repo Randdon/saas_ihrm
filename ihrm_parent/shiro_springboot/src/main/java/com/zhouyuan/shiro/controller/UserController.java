@@ -2,10 +2,11 @@ package com.zhouyuan.shiro.controller;
 
 import com.zhouyuan.shiro.service.UserService;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @RequestMapping(value = "/user/home")
     public String home() {
@@ -75,10 +77,11 @@ public class UserController {
             UsernamePasswordToken upToken = new UsernamePasswordToken(username, password);
             //获取subject
             Subject subject = SecurityUtils.getSubject();
-            //调用subject进行登录
+            //调用subject进行登录，调用此方法后进入自定义realm中的认证方法进行认证
             subject.login(upToken);
             return "登录成功";
         } catch (Exception e) {
+            LOGGER.error("登陆异常：{}",e);
             return "用户名或密码错误";
         }
     }

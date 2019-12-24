@@ -59,7 +59,7 @@ public class CustomRealm extends AuthorizingRealm {
         //1.获取登录的用户名密码（token）
         UsernamePasswordToken upToken = (UsernamePasswordToken) authenticationToken;
         String username = upToken.getUsername();
-        String passwd = upToken.getPassword().toString();
+        String passwd =  String.valueOf(upToken.getPassword());
         //2.根据用户名查询数据库
         User user = userService.findByName(username);
         //3.判断用户是否存在或者密码是否一致

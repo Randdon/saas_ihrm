@@ -17,6 +17,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @RequestMapping(value = "/user/home")
+    public String home() {
+        return "访问个人主页成功";
+    }
+
     //添加
     @RequestMapping(value = "/user",method = RequestMethod.POST)
     public String add() {

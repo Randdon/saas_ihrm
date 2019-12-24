@@ -52,8 +52,8 @@ public class ShiroConfig {
         //2.设置安全管理器
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //3.通用配置（跳转登录页面，未授权跳转的页面）
-        shiroFilterFactoryBean.setLoginUrl("/autherror/code=1");//登录页面
-        shiroFilterFactoryBean.setUnauthorizedUrl("/autherror/code=2");//未授权跳转页面
+        shiroFilterFactoryBean.setLoginUrl("/autherror?code=1");//登录页面
+        shiroFilterFactoryBean.setUnauthorizedUrl("/autherror?code=2");//未授权跳转页面
         /**
          * 4.设置过滤器集合
          * 设置所有的过滤器：有顺序map

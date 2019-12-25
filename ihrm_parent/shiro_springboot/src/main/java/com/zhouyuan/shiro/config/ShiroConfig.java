@@ -64,8 +64,10 @@ public class ShiroConfig {
         //当前请求地址可以匿名访问
         //filterMap.put("/user/home","anon");
 
+        //TODO 本例中使用过滤器配置url鉴权有个疑问：为什么必须是【user-home】或【系统管理员】字段，其它字段就不行
         //使用过滤器的形式配置请求地址的依赖权限，具有某种权限才能访问，不具备指定的权限，跳转到setUnauthorizedUrl地址
         //filterMap.put("/user/home","perms[user-home]");
+        //使用过滤器的形式配置请求地址的依赖权限，具有某种角色才能访问，不具备指定的角色，跳转到setUnauthorizedUrl地址
         filterMap.put("/user/home","roles[系统管理员]");
         //当前请求地址必须认证之后可以访问
         filterMap.put("/user/**","authc");

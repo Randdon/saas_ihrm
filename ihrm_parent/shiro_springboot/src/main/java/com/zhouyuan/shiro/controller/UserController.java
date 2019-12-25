@@ -92,7 +92,8 @@ public class UserController {
             Subject subject = SecurityUtils.getSubject();
             //调用subject进行登录，调用此方法后进入自定义realm中的认证方法进行认证
             subject.login(upToken);
-            return "登录成功";
+            String sessionId = subject.getSession().getId().toString();
+            return "登录成功，sessionId：" + sessionId;
         } catch (Exception e) {
             LOGGER.error("登陆异常：{}",e);
             return "用户名或密码错误";

@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 9022
 spring:
   application:
     name: zhouyuan-shiro #指定服务名
@@ -12,6 +12,7 @@ spring:
     database: MySQL
     show-sql: true
     open-in-view: true
+
   redis:
     host: 127.0.0.1
     port: 6379

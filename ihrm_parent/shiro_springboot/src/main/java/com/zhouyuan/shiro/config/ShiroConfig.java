@@ -1,10 +1,17 @@
 package com.zhouyuan.shiro.config;
 
 import com.zhouyuan.shiro.realm.CustomRealm;
+import com.zhouyuan.shiro.session.CustomSessionManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,12 +20,13 @@ import java.util.Map;
 
 /**
  * shiro配置类
+ * shiro整合redis的统一会话管理：SecurityManager -> sessionManager -> sessionDAO -> redisManager
  */
 @Configuration
 public class ShiroConfig {
 
     /**
-     *  创建realm
+     *  创建自定义realm
      * @return
      */
     @Bean
@@ -36,6 +44,10 @@ public class ShiroConfig {
         //DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(realm);
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(realm);
+        //将自定义的会话管理器注册到安全管理器中
+        securityManager.setSessionManager(sessionManager());
+        //将自定义的redis缓存管理器注册到安全管理器中
+        securityManager.setCacheManager(redisCacheManager());
         return securityManager;
     }
 
@@ -73,6 +85,51 @@ public class ShiroConfig {
         filterMap.put("/user/**","authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
         return shiroFilterFactoryBean;
+    }
+
+    /**
+     * 自定义会话管理器
+     * @return
+     */
+    public DefaultWebSessionManager sessionManager(){
+        CustomSessionManager customSessionManager = new CustomSessionManager();
+        customSessionManager.setSessionDAO(sessionDAO());
+        return customSessionManager;
+    }
+
+    /**
+     * sessionDao-存取session信息
+     * @return
+     */
+    public SessionDAO sessionDAO(){
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager());
+        return redisSessionDAO;
+    }
+
+    /**
+     * redis缓存管理器
+     * @return
+     */
+    public RedisCacheManager redisCacheManager(){
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        return redisCacheManager;
+    }
+
+    @Value("${spring.redis.host}")
+    private String host;
+    @Value("${spring.redis.port}")
+    private int port;
+
+    /**
+     * redis的控制器，操作redis
+     * @return
+     */
+    public RedisManager redisManager(){
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(host);
+        return redisManager;
     }
 
     /**

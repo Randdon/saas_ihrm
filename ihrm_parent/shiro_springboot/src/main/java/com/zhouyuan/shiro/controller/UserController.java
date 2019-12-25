@@ -3,6 +3,7 @@ package com.zhouyuan.shiro.controller;
 import com.zhouyuan.shiro.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -19,6 +20,15 @@ public class UserController {
     private UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    /**
+     * 使用shiro注解鉴权：
+     * @RequiresPermissions()  -- 访问此方法必须具备的权限
+     * @RequiresRoles() -- 访问此方法必须具备的角色
+     * 1.过滤器鉴权：如果权限信息不匹配setUnauthorizedUrl地址
+     * 2.注解鉴权：如果权限信息不匹配，抛出AuthorizationException异常
+     * @return
+     */
+    @RequiresPermissions("user-home")
     @RequestMapping(value = "/user/home")
     public String home() {
         return "访问个人主页成功";

@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
+
 @RestController
 public class UserController {
 
@@ -101,5 +104,29 @@ public class UserController {
     public String auth(int code) {
         return code == 1 ? "未登录" : "未授权";
     }
+
+    /**
+     * 通过shiro的Subject.login()方法登录成功后，用户的认证信息实际上是保存在HttpSession中的
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "/show")
+    public String show(HttpSession session) {
+	    //获取session中的所有键值
+        Enumeration<String> attributeNames = session.getAttributeNames();
+        String element;
+        //遍历session中的所有键值
+        while (attributeNames.hasMoreElements()){
+            //获取键值
+            element = attributeNames.nextElement();
+            /**
+             * 根据键值获取session中的value值，可以从打印信息中看到在com.zhouyuan.shiro.realm.CustomRealm.doGetAuthenticationInfo
+             * 认证方法中认证通过后存储的user对象安全数据
+             */
+            System.out.println("===name: "+ element +",value: " + session.getAttribute(element));
+        }
+        return "查看session成功";
+    }
+
 
 }

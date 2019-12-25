@@ -64,7 +64,7 @@ public class CustomRealm extends AuthorizingRealm {
         User user = userService.findByName(username);
         //3.判断用户是否存在或者密码是否一致
         if (null != user && passwd.equals(user.getPassword())){
-            //4.如果一致，向shiro存入安全数据
+            //4.如果一致，向shiro存入安全数据，在web程序中，通过shiro的Subject.login()方法登录成功后，用户的认证信息实际上是保存在HttpSession中的
             //SimpleAuthenticationInfo构造器参数列表：1.安全数据，（此处存的是user对象）2.密码。3。当前realm域名称
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, passwd, getName());
             return info;

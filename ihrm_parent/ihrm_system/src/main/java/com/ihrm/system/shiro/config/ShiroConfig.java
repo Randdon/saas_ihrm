@@ -89,7 +89,7 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public SecurityManager securityManager(UserRealm realm){
+    public SecurityManager securityManager(IhrmRealm realm){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(realm);
         //将自定义的redis缓存管理器注册到安全管理器中

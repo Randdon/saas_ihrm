@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @author: yuand
  * @create: 2019-12-17 17:34
  **/
-@Configuration
+//@Configuration
 public class SystemConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired

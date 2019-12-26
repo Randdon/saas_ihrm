@@ -2,6 +2,7 @@ package com.zhouyuan.saas.ihrm.controller;
 
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author: yuand
  * @create: 2019-12-26 15:40
  **/
+@Controller
 public class AuthErrorController {
 
     @RequestMapping(value = "/autherror")

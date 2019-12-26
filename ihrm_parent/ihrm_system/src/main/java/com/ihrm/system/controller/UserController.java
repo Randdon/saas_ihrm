@@ -1,6 +1,5 @@
 package com.ihrm.system.controller;
 
-import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.User;
 import com.ihrm.domain.system.response.ProfileResult;
 import com.ihrm.domain.system.response.UserResult;
@@ -15,6 +14,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -185,15 +184,15 @@ public class UserController extends BaseController {
      * 前后端约定：前端请求微服务时需要添加头信息Authorization ,内容为Bearer+空格+token
      * @return
      */
-    @RequestMapping(value = "profile",method = RequestMethod.POST)
+/*    @RequestMapping(value = "profile",method = RequestMethod.POST)
     public Result profile(){
-/*
+*//*
         //从请求头中获取token
         String authorization = request.getHeader("Authorization");
         String token = authorization.replace("Bearer ","");
         //解析token获取claims
         Claims claims = jwtUtils.parseJwt(token);
-*/
+*//*
         //从claims中获取userId
         String userId = claims.getId();
         User user = userService.findById(userId);
@@ -210,6 +209,14 @@ public class UserController extends BaseController {
             List<Permission> permissions = permissionService.findAll(map);
             result = new ProfileResult(user,permissions);
         }
+        return new Result(ResultCode.SUCCESS, result);
+    }*/
+
+    @RequestMapping(value = "profile",method = RequestMethod.POST)
+    public Result profile(){
+        Subject subject = SecurityUtils.getSubject();
+        PrincipalCollection principals = subject.getPrincipals();
+        ProfileResult result = (ProfileResult) principals.getPrimaryPrincipal();
         return new Result(ResultCode.SUCCESS, result);
     }
 }

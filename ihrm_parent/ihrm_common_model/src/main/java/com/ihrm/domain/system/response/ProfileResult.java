@@ -4,6 +4,7 @@ import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -11,7 +12,7 @@ import java.util.*;
  * @author: yuand
  * @create: 2019-12-17 10:25
  **/
-public class ProfileResult {
+public class ProfileResult implements Serializable {
 
     private String mobile;
     private String username;

@@ -12,6 +12,7 @@ import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author: yuand
  * @create: 2019-12-26 14:49
  **/
+@Configuration
 public class ShiroConfig {
 
     /**

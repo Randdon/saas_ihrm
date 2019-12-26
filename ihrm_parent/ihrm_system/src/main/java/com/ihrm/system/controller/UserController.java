@@ -11,8 +11,11 @@ import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.JwtUtils;
-import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
-import io.jsonwebtoken.Claims;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 //1.解决跨域
 @CrossOrigin
@@ -124,7 +126,7 @@ public class UserController extends BaseController {
      * @param map
      * @return
      */
-    @RequestMapping(value = "login",method = RequestMethod.POST)
+/*    @RequestMapping(value = "login",method = RequestMethod.POST)
     public Result login(@RequestBody Map<String,String> map){
         String mobile = map.get("mobile");
         String password = map.get("password");
@@ -147,6 +149,35 @@ public class UserController extends BaseController {
             String token = jwtUtils.createJwt(user.getId(), user.getUsername(), params);
             return new Result(ResultCode.SUCCESS,token);
         }
+    }*/
+
+    /**
+     * 用户登录
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "login",method = RequestMethod.POST)
+    public Result login(@RequestBody Map<String,String> map){
+        String sessionId;
+        try {
+            String mobile = map.get("mobile");
+            String password = map.get("password");
+            //加密密码，构造器参数列表：密码，盐，加密次数
+            password = new Md5Hash(password,mobile,3).toString();
+            //1.构造登录令牌 UsernamePasswordToken
+            UsernamePasswordToken upToken = new UsernamePasswordToken(mobile, password);
+            //2.获取subject
+            Subject subject = SecurityUtils.getSubject();
+            //3.调用login方法，进入realm完成认证
+            subject.login(upToken);
+            //4.获取sessionId
+            sessionId = subject.getSession().getId().toString();
+        } catch (AuthenticationException e) {
+            LOGGER.error("登录失败!{}",e);
+            return new Result(ResultCode.UNAUTHENTICATED);
+        }
+        //5.构造返回结果
+        return new Result(ResultCode.SUCCESS,sessionId);
     }
 
     /**

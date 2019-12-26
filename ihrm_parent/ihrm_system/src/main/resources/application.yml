@@ -23,7 +23,9 @@ spring:
     #Spring boot2.0之前使用的是InnoDB，Spring boot2.0之后默认使用的是myisam引擎，如果数据库用的是InnoDB，
     #那么在2.0之后的spring boot+jpa自动建表时就会出错
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-
+  redis:
+    host: 127.0.0.1
+    port: 6379
 jwt:
   config:
     key: saas-ihrm

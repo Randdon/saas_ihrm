@@ -3,7 +3,6 @@ package com.ihrm.domain.system.response;
 import com.ihrm.domain.system.Permission;
 import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
-import com.zhouyuan.saas.ihrm.utils.PermissionConstants;
 
 import java.util.*;
 
@@ -29,9 +28,9 @@ public class ProfileResult {
         Set<String> apis = new HashSet<>(16);
 
         permissions.stream().forEach(permission -> {
-            if (permission.getType().equals(PermissionConstants.PY_API)){
+            if (permission.getType().equals(3)){
                 apis.add(permission.getCode());
-            } else if (permission.getType().equals(PermissionConstants.PY_POINT)){
+            } else if (permission.getType().equals(2)){
                 points.add(permission.getCode());
             } else {
                 menus.add(permission.getCode());
@@ -54,9 +53,9 @@ public class ProfileResult {
         Set<Role> roleSet = user.getRoles();
 
         roleSet.stream().forEach(role -> role.getPermissions().stream().forEach(permission -> {
-            if (permission.getType().equals(PermissionConstants.PY_API)){
+            if (permission.getType().equals(3)){
                 apis.add(permission.getCode());
-            } else if (permission.getType().equals(PermissionConstants.PY_POINT)){
+            } else if (permission.getType().equals(2)){
                 points.add(permission.getCode());
             } else {
                 menus.add(permission.getCode());

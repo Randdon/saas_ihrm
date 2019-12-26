@@ -24,6 +24,12 @@ public class UserRealm extends IhrmRealm {
     @Autowired
     PermissionService permissionService;
 
+    /**
+     * 认证方法
+     * @param authenticationToken
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 

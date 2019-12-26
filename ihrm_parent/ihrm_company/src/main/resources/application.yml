@@ -1,6 +1,6 @@
 #服务配置
 server:
-  port: 9010
+  port: 8188
 #spring配置
 spring:
   #1.应用配置
@@ -12,8 +12,13 @@ spring:
     url: jdbc:mysql://localhost:3306/ihrm?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: root
     password: root1234
+  redis:
+    host: 127.0.0.1
+    port: 6379
   #3.JPA
   jpa:
     database: MySQL
     show-sql: true
     open-in-view: true
+    hibernate:
+      ddl-auto: update

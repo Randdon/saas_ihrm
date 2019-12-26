@@ -2,6 +2,7 @@ package com.zhouyuan.saas.ihrm.controller;
 
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @create: 2019-12-26 15:40
  **/
 @RestController
+@CrossOrigin
 public class AuthErrorController {
 
     /**

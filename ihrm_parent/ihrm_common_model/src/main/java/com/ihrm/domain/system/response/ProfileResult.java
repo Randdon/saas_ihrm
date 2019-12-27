@@ -17,12 +17,15 @@ public class ProfileResult implements Serializable {
     private String mobile;
     private String username;
     private String company;
+    private String companyId;
+
     private Map<String,Object> roles = new HashMap<>(16);
 
     public ProfileResult(User user, List<Permission> permissions) {
         this.mobile = user.getMobile();
         this.username = user.getUsername();
         this.company = user.getCompanyName();
+        this.companyId = user.getCompanyId();
 
         Set<String> menus = new HashSet<>(16);
         Set<String> points = new HashSet<>(16);
@@ -47,6 +50,7 @@ public class ProfileResult implements Serializable {
         this.mobile = user.getMobile();
         this.username = user.getUsername();
         this.company = user.getCompanyName();
+        this.companyId = user.getCompanyId();
 
         Set<String> menus = new HashSet<>(16);
         Set<String> points = new HashSet<>(16);
@@ -98,5 +102,13 @@ public class ProfileResult implements Serializable {
 
     public void setRoles(Map<String, Object> roles) {
         this.roles = roles;
+    }
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
     }
 }

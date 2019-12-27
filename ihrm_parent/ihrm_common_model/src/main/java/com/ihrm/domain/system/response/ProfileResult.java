@@ -14,6 +14,7 @@ import java.util.*;
  **/
 public class ProfileResult implements Serializable {
 
+    private long id;
     private String mobile;
     private String username;
     private String company;
@@ -110,5 +111,13 @@ public class ProfileResult implements Serializable {
 
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

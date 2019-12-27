@@ -3,6 +3,7 @@ package com.zhouyuan.saas.ihrm.handler;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.exception.CommonException;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,5 +29,12 @@ public class BaseExceptionHandler {
             Result result = new Result(ResultCode.SERVER_ERROR);
             return result;
         }
+    }
+
+    @ExceptionHandler(value = AuthorizationException.class)
+    @ResponseBody
+    public Result authorizeError(AuthorizationException exp){
+        exp.printStackTrace();
+        return new Result(ResultCode.UNAUTHORISE);
     }
 }

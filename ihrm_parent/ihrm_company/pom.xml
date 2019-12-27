@@ -35,6 +35,12 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!--eureka client端依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

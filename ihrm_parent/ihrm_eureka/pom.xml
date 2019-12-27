@@ -12,7 +12,7 @@
     <artifactId>ihrm_eureka</artifactId>
 
     <dependencies>
-        <!--eureka -->
+        <!--eureka server端依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>

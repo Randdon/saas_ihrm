@@ -13,6 +13,7 @@ import com.zhouyuan.saas.ihrm.utils.JwtUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -114,6 +115,7 @@ public class UserController extends BaseController {
     /**
      * 根据id删除
      */
+    @RequiresPermissions(value = "API-USER-DELETE")
     @RequestMapping(value="/user/{id}",method = RequestMethod.DELETE, name = "API-USER-DELETE")
     public Result delete(@PathVariable(value="id") String id) {
         userService.deleteById(id);

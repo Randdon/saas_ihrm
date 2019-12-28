@@ -17,6 +17,6 @@ public interface DepartmentFeignClient {
      * @param id
      * @return
      */
-    @RequestMapping(value="/department/{id}",method = RequestMethod.GET)
+    @RequestMapping(value="/company/department/{id}",method = RequestMethod.GET)
     Result findById(@PathVariable(value="id") String id);
 }

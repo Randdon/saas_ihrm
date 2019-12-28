@@ -58,6 +58,9 @@ public class Result {
         this.success = success;
     }
 
+    public Result() {
+    }
+
     public static Result SUCCESS(){
         return new Result(ResultCode.SUCCESS);
     }

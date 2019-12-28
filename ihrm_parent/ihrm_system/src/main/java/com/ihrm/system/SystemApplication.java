@@ -5,7 +5,9 @@ import com.zhouyuan.saas.ihrm.utils.JwtUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
@@ -14,6 +16,8 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 //jpa注解的扫描
 @EntityScan(value = "com.ihrm.domain.system")
 @EnableEurekaClient//开启eureka客户端配置
+@EnableDiscoveryClient//Feign-在微服务调用方的启动类加上该注解
+@EnableFeignClients//Feign-在微服务调用方的启动类加上该注解
 public class SystemApplication {
     public static void main(String[] args) {
         SpringApplication.run(SystemApplication.class,args);

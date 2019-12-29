@@ -28,6 +28,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.zhouyuan.saas.ihrm</groupId>
             <artifactId>ihrm_common_model</artifactId>
             <version>1.0-SNAPSHOT</version>

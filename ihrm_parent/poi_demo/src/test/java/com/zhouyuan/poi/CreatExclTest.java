@@ -1,9 +1,11 @@
 package com.zhouyuan.poi;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -50,6 +52,30 @@ public class CreatExclTest {
         row.setHeightInPoints(50);//行高，单位为磅
         //第一个参数为指定列索引
         sheet.setColumnWidth(2,50*256);//列宽，指字符宽度
+
+        /**
+         * 使用poi为excel中添加图片
+         */
+        //创建图片文件输入流
+        FileInputStream inputStream = new FileInputStream("D:\\projects\\zhouyuan\\saas_ihrm\\ihrm_parent\\poi_demo\\test\\hammer.png");
+        //将图片文件输入流转化为二进制数组
+        byte[] bytes = IOUtils.toByteArray(inputStream);
+        //将该图片添加进poi内存中，返回该图片在图片集合中的索引，参数1：图片的二进制数组；图片2：图片类型
+        int picIndex = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+        //利用工作簿对象获取绘制图片工具类
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        //利用绘制图片工具类获取锚点对象
+        ClientAnchor anchor = creationHelper.createClientAnchor();
+        //设置图片坐标
+        anchor.setCol1(3);
+        anchor.setRow1(3);
+        //利用表单对象获取绘图对象
+        Drawing<?> drawingPatriarch = sheet.createDrawingPatriarch();
+        //使用绘图对象，根据图片位置锚点及图片索引绘制图片
+        Picture picture = drawingPatriarch.createPicture(anchor, picIndex);
+        //自适应渲染图片，必须有这行代码，不然创建的xlsx里没有图片
+        picture.resize();
+
         //创建文件输出流
         FileOutputStream outputStream = new FileOutputStream("D:\\projects\\zhouyuan\\saas_ihrm\\ihrm_parent\\poi_demo\\test\\creat.xlsx");
         //写入文件

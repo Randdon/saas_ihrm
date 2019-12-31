@@ -8,6 +8,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
+/**
+ * 用户表单excel对象实体
+ */
 @Getter
 @Setter
 @NoArgsConstructor

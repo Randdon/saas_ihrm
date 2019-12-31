@@ -23,6 +23,12 @@ public class UserCompanyPersonalService {
         return userCompanyPersonalDao.findByUserId(userId);
     }
 
+    /**
+     * 获取构成表单的数据
+     * @param month
+     * @param companyId
+     * @return
+     */
     public List<EmployeeReportResult> findEmployeeReport(String month, String companyId) {
         List<EmployeeReportResult> result = userCompanyPersonalDao.findEmployeeReport(month,companyId);
         return result;

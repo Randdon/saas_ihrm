@@ -1,18 +1,28 @@
 package com.ihrm.employee.controller;
 
 import com.ihrm.domain.employee.*;
+import com.ihrm.domain.employee.response.EmployeeReportResult;
 import com.ihrm.employee.service.*;
 import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
+import com.zhouyuan.saas.ihrm.utils.DownloadUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -195,5 +205,81 @@ public class EmployeeController extends BaseController {
         Page<EmployeeArchive> searchPage = archiveService.findSearch(map, page, pagesize);
         PageResult<EmployeeArchive> pr = new PageResult(searchPage.getTotalElements(),searchPage.getContent());
         return new Result(ResultCode.SUCCESS,pr);
+    }
+
+    /**
+     * excel表单导出
+     * @param month 月份 格式：2018-02
+     * @throws IOException
+     */
+    @RequestMapping(value = "/export/{month}", method = RequestMethod.GET)
+    public void export(@PathVariable(name = "month") String month) throws IOException {
+        //从db中获取构成表单的数据
+        List<EmployeeReportResult> employeeReports = userCompanyPersonalService.findEmployeeReport(month+"%",companyId);
+        //创建工作簿
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        //创建表单
+        XSSFSheet sheet = workbook.createSheet();
+
+        //创建报表首行
+        XSSFRow row = sheet.createRow(0);
+        //报表标题字段数组
+        String[] titles = "编号,姓名,手机,最高学历,国家地区,护照号,籍贯,生日,属相,入职时间,离职类型,离职原因,离职时间".split(",");
+        XSSFCell cell;
+        //创建标题行
+        for (int i = 0; i < titles.length; i++) {
+            cell = row.createCell(i);
+            cell.setCellValue(titles[i]);
+        }
+
+        //插入数据到表单，每个employeeReport对象即是表单中一行数据，employeeReports对象中的每个字段即是每一行中的每个单元格的数据值
+        for (int i = 0; i < employeeReports.size(); i++) {
+            //创建行，因为首行在循环外已单独创建，所以创建时行索引+1
+            row = sheet.createRow(i+1);
+            // 编号
+            cell = row.createCell(0);
+            cell.setCellValue(employeeReports.get(i).getUserId());
+            // 姓名
+            cell = row.createCell(1);
+            cell.setCellValue(employeeReports.get(i).getUsername());
+            // 手机
+            cell = row.createCell(2);
+            cell.setCellValue(employeeReports.get(i).getMobile());
+            // 最高学历
+            cell = row.createCell(3);
+            cell.setCellValue(employeeReports.get(i).getTheHighestDegreeOfEducation());
+            // 国家地区
+            cell = row.createCell(4);
+            cell.setCellValue(employeeReports.get(i).getNationalArea());
+            // 护照号
+            cell = row.createCell(5);
+            cell.setCellValue(employeeReports.get(i).getPassportNo());
+            // 籍贯
+            cell = row.createCell(6);
+            cell.setCellValue(employeeReports.get(i).getNativePlace());
+            // 生日
+            cell = row.createCell(7);
+            cell.setCellValue(employeeReports.get(i).getBirthday());
+            // 属相
+            cell = row.createCell(8);
+            cell.setCellValue(employeeReports.get(i).getZodiac());
+            // 入职时间
+            cell = row.createCell(9);
+            cell.setCellValue(employeeReports.get(i).getTimeOfEntry());
+            // 离职类型
+            cell = row.createCell(10);
+            cell.setCellValue(employeeReports.get(i).getTypeOfTurnover());
+            // 离职原因
+            cell = row.createCell(11);
+            cell.setCellValue(employeeReports.get(i).getReasonsForLeaving());
+            // 离职时间
+            cell = row.createCell(12);
+            cell.setCellValue(employeeReports.get(i).getResignationTime());
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        //下载报表
+        DownloadUtils.download(outputStream,response,month+"月人事报表.xlsx");
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -261,4 +262,20 @@ public class User implements Serializable {
             inverseJoinColumns={@JoinColumn(name="role_id",referencedColumnName="id")}
     )
     private Set<Role> roles = new HashSet<Role>();//用户与角色   多对多
+
+    public User(Object[] objects) {
+        //因为excel模板的第一列为空，所以单元格数据值数组从索引1位置开始取值
+        this.username = objects[1].toString();
+        this.mobile = objects[2].toString();
+        //因为excel上的数字采用科学计数法或poi解析成double类型的缘故，所以这里需要处理字符串格式
+        this.workNumber = new DecimalFormat("#").format(objects[3]);
+        //poi会将excel上的数字都解析成double型，所以此处需要转型
+        this.formOfEmployment = ((Double)objects[4]).intValue();
+        this.timeOfEntry = (Date)objects[5];
+        //TODO 先把部门编号暂时存放到部门名称字段里，因为要根据部门编号获取部门Id和name的话涉及跨服务器调用的问题，后面解决
+        this.departmentName = objects[6].toString();
+    }
+
+    public User() {
+    }
 }

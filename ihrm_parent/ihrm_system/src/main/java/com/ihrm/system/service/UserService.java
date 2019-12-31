@@ -5,6 +5,7 @@ import com.ihrm.domain.system.User;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +36,13 @@ public class UserService {
     public void add(User user){
         //设置主键的值
         String id = idWorker.nextId()+"";
-        user.setPassword("123456");//设置初始密码
-        user.setEnableState(1);
         user.setId(id);
+        //设置默认密码
+        user.setPassword(new Md5Hash("123456",user.getMobile(),3).toString());
+        //基本初始属性
+        user.setLevel("user");
+        user.setInServiceStatus(1);
+        user.setEnableState(1);
         //调用dao保存用户
         userDao.save(user);
     }
@@ -139,5 +141,29 @@ public class UserService {
     public User findByMobile(String mobile){
         User user = userDao.findByMobile(mobile);
         return user;
+    }
+
+    /**
+     * 批量保存用户
+     * @param users
+     * @param companyId
+     * @param companyName
+     */
+    public void saveAll(List<User> users, String companyId, String companyName) {
+
+        users.forEach(user -> {
+            //生成主键id
+            user.setId(idWorker.nextId() + "");
+            //设置默认密码
+            user.setPassword(new Md5Hash("123456",user.getMobile(),3).toString());
+            //基本初始属性
+            user.setCompanyName(companyName);
+            user.setCompanyId(companyId);
+            user.setLevel("user");
+            user.setInServiceStatus(1);
+            user.setEnableState(1);
+            user.setCreateTime(new Date());
+        });
+        userDao.saveAll(users);
     }
 }

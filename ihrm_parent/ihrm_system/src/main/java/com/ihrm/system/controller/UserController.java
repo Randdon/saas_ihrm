@@ -10,6 +10,8 @@ import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.JwtUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -22,7 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -220,5 +225,91 @@ public class UserController extends BaseController {
         PrincipalCollection principals = subject.getPrincipals();
         ProfileResult result = (ProfileResult) principals.getPrimaryPrincipal();
         return new Result(ResultCode.SUCCESS, result);
+    }
+
+    /**
+     * 使用excel模板批量导入用户
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = "user/import",method = RequestMethod.POST)
+    public Result importUsers(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        //根据excl文件输入流创建工作簿
+        Workbook workbook = new XSSFWorkbook(file.getInputStream());
+        //根据sheet索引获取表单sheet对象
+        Sheet sheet = workbook.getSheetAt(0);
+        /**
+         * 获取该表单最后一行的行索引（从0开始）
+         */
+        int lastRowNum = sheet.getLastRowNum();
+        Row row;
+        short lastCellNum;
+        Cell cell;
+        Object cellValue;
+        Object[] values;
+        List<User> users = new ArrayList<>(16);
+        //遍历循环获取该sheet表单内的每一行和每一个单元格
+        for (int rowNum = 1; rowNum < lastRowNum + 1; rowNum++) {//跳过首行
+            //根据行索引从表单中获取行对象
+            row = sheet.getRow(rowNum);
+            if (null == row){
+                continue;
+            }
+            /**
+             * 获取该行最后一个单元格的编号（从1开始）
+             */
+            lastCellNum = row.getLastCellNum();
+            values = new Object[lastCellNum];
+            for (int cellNum = 0; cellNum < lastCellNum; cellNum++) {
+                //根据单元格编号从行对象中获取单元格对象
+                cell = row.getCell(cellNum);
+                if (null == cell){
+                    continue;
+                }
+                //获取该单元格的数据值
+                cellValue = getCellValue(cell);
+                values[cellNum] = cellValue;
+            }
+            users.add(new User(values));
+        }
+        userService.saveAll(users,companyId,companyName);
+        return new Result(ResultCode.SUCCESS);
+    }
+
+    /**
+     * 获取单元格的数据
+     * @param cell
+     * @return
+     */
+    public Object getCellValue(Cell cell){
+        //得到单元格的数据类型
+        CellType cellType = cell.getCellType();
+        Object value = null;
+        //根据单元格数据类型获取数据
+        switch (cellType){
+            case STRING:
+                value = cell.getStringCellValue();
+                break;
+            case BOOLEAN:
+                value = cell.getBooleanCellValue();
+                break;
+            case FORMULA:
+                //公式
+                value = cell.getCellFormula();
+                break;
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)){
+                    //日期格式数据
+                    value = cell.getDateCellValue();
+                }else {
+                    //数字
+                    value = cell.getNumericCellValue();
+                }
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 }

@@ -1,7 +1,9 @@
 package com.ihrm.system.service;
 
+import com.ihrm.domain.company.Department;
 import com.ihrm.domain.system.Role;
 import com.ihrm.domain.system.User;
+import com.ihrm.system.DepartmentFeignClient;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
@@ -28,6 +30,8 @@ public class UserService {
     IdWorker idWorker;
     @Autowired
     RoleDao roleDao;
+    @Autowired
+    DepartmentFeignClient departmentFeignClient;
 
     /**
      * 保存用户
@@ -163,6 +167,11 @@ public class UserService {
             user.setInServiceStatus(1);
             user.setEnableState(1);
             user.setCreateTime(new Date());
+
+            //利用Feign组件跨服务调用企业微服务部门接口查询部门信息
+            Department department = departmentFeignClient.findByCode(user.getDepartmentName());
+            user.setDepartmentId(department.getId());
+            user.setDepartmentName(department.getName());
         });
         userDao.saveAll(users);
     }

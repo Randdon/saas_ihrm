@@ -104,5 +104,13 @@ public class DepartmentController extends BaseController {
         return new Result(ResultCode.SUCCESS);
     }
 
-
+    /**
+     * 根据code查询department
+     * @return
+     */
+    @RequestMapping(value="/department/findByCode",method = RequestMethod.GET)
+    public Department findByCode(@RequestParam(value="code") String departCode) {
+        Department department = departmentService.findByCompanyIdAndCode(departCode,companyId);
+        return department;
+    }
 }

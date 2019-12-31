@@ -1,10 +1,12 @@
 package com.ihrm.system;
 
+import com.ihrm.domain.company.Department;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Feign-在微服务调用方创建被调用微服务的Java接口
@@ -19,4 +21,12 @@ public interface DepartmentFeignClient {
      */
     @RequestMapping(value="/company/department/{id}",method = RequestMethod.GET)
     Result findById(@PathVariable(value="id") String id);
-}
+
+    /**
+     * 根据code查询department
+     * @return
+     */
+    @RequestMapping(value="/company/department/findByCode",method = RequestMethod.GET)
+    Department findByCode(@RequestParam(value="code") String departCode);
+
+    }

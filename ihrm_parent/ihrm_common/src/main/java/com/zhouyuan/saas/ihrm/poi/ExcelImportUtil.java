@@ -1,26 +1,25 @@
-package com.ihrm.common.poi.utils;
+package com.zhouyuan.saas.ihrm.poi;
 
 import com.ihrm.domain.poi.ExcelAttribute;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.format.CellFormat;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
+/**
+ * excel解析工具类
+ * @param <T>
+ */
 public class ExcelImportUtil<T> {
  
     private Class clazz;
@@ -40,14 +39,12 @@ public class ExcelImportUtil<T> {
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
-            // 不准确
+            // 不准确，因为这里获取的其实是最后一行的行索引，会比行的总数小1，所以下面的循环条件是<=
             int rowLength = sheet.getLastRowNum();
 
-            System.out.println(sheet.getLastRowNum());
-            for (int rowNum = rowIndex; rowNum <= sheet.getLastRowNum(); rowNum++) {
+            for (int rowNum = rowIndex; rowNum <= rowLength; rowNum++) {
                 Row row = sheet.getRow(rowNum);
                 entity = (T) clazz.newInstance();
-                System.out.println(row.getLastCellNum());
                 for (int j = cellIndex; j < row.getLastCellNum(); j++) {
                     Cell cell = row.getCell(j);
                     for (Field field : fields) {

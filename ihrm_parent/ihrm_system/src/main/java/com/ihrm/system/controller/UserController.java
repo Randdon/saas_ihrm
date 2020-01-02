@@ -9,6 +9,7 @@ import com.zhouyuan.saas.ihrm.controller.BaseController;
 import com.zhouyuan.saas.ihrm.entity.PageResult;
 import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
+import com.zhouyuan.saas.ihrm.poi.ExcelImportUtil;
 import com.zhouyuan.saas.ihrm.utils.JwtUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -235,13 +236,20 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "user/import",method = RequestMethod.POST)
     public Result importUsers(@RequestParam(name = "file") MultipartFile file) throws IOException {
-        //根据excl文件输入流创建工作簿
+
+        /**
+         * 使用导入模板中的数据对象构造excel导入工具类
+         */
+        ExcelImportUtil excelImportUtil = new ExcelImportUtil(User.class);
+        //使用工具类解析读取excel
+        List users = excelImportUtil.readExcel(file.getInputStream(), 1, 1);
+/*        //根据excl文件输入流创建工作簿
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         //根据sheet索引获取表单sheet对象
         Sheet sheet = workbook.getSheetAt(0);
-        /**
+        *//**
          * 获取该表单最后一行的行索引（从0开始）
-         */
+         *//*
         int lastRowNum = sheet.getLastRowNum();
         Row row;
         short lastCellNum;
@@ -256,9 +264,9 @@ public class UserController extends BaseController {
             if (null == row){
                 continue;
             }
-            /**
+            *//**
              * 获取该行最后一个单元格的编号（从1开始）
-             */
+             *//*
             lastCellNum = row.getLastCellNum();
             values = new Object[lastCellNum];
             for (int cellNum = 0; cellNum < lastCellNum; cellNum++) {
@@ -272,7 +280,7 @@ public class UserController extends BaseController {
                 values[cellNum] = cellValue;
             }
             users.add(new User(values));
-        }
+        }*/
         userService.saveAll(users,companyId,companyName);
         return new Result(ResultCode.SUCCESS);
     }

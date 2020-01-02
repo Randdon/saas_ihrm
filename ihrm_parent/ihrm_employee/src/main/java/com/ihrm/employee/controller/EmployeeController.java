@@ -9,12 +9,14 @@ import com.zhouyuan.saas.ihrm.entity.Result;
 import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
 import com.zhouyuan.saas.ihrm.utils.DownloadUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -216,65 +218,106 @@ public class EmployeeController extends BaseController {
     public void export(@PathVariable(name = "month") String month) throws IOException {
         //从db中获取构成表单的数据
         List<EmployeeReportResult> employeeReports = userCompanyPersonalService.findEmployeeReport(month+"%",companyId);
-        //创建工作簿
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        //创建表单
-        XSSFSheet sheet = workbook.createSheet();
 
+        //获取模板资源
+        ClassPathResource classPathResource = new ClassPathResource("excel_template/hr-demo.xlsx");
+        //根据模板创建工作簿
+        XSSFWorkbook workbook = new XSSFWorkbook(classPathResource.getInputStream());
+        //获取模板表单
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        //获取模板中假数据那一行的行对象
+        XSSFRow row = sheet.getRow(2);
+        //读取模板样式到样式数组
+        short lastCellNum = row.getLastCellNum();
+        CellStyle[] cellStyles = new CellStyle[lastCellNum];
+        for (int i = 0; i < lastCellNum; i++) {
+            cellStyles[i] = row.getCell(i).getCellStyle();
+        }
+
+/*
         //创建报表首行
         XSSFRow row = sheet.createRow(0);
         //报表标题字段数组
         String[] titles = "编号,姓名,手机,最高学历,国家地区,护照号,籍贯,生日,属相,入职时间,离职类型,离职原因,离职时间".split(",");
-        XSSFCell cell;
         //创建标题行
         for (int i = 0; i < titles.length; i++) {
             cell = row.createCell(i);
             cell.setCellValue(titles[i]);
         }
-
+*/
+        row = sheet.getRow(0);
+        row.getCell(0);
+        XSSFCell cell = row.getCell(0);
+        cell.setCellValue(month + "人事报表");
         //插入数据到表单，每个employeeReport对象即是表单中一行数据，employeeReports对象中的每个字段即是每一行中的每个单元格的数据值
         for (int i = 0; i < employeeReports.size(); i++) {
-            //创建行，因为首行在循环外已单独创建，所以创建时行索引+1
-            row = sheet.createRow(i+1);
+            //创建行，因为模板中前2行都是标题，第3行开始才记录用户数据，所以此处是i+2
+            row = sheet.createRow(i+2);
             // 编号
             cell = row.createCell(0);
             cell.setCellValue(employeeReports.get(i).getUserId());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[0]);
             // 姓名
             cell = row.createCell(1);
             cell.setCellValue(employeeReports.get(i).getUsername());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[1]);
             // 手机
             cell = row.createCell(2);
             cell.setCellValue(employeeReports.get(i).getMobile());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[2]);
             // 最高学历
             cell = row.createCell(3);
             cell.setCellValue(employeeReports.get(i).getTheHighestDegreeOfEducation());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[3]);
             // 国家地区
             cell = row.createCell(4);
             cell.setCellValue(employeeReports.get(i).getNationalArea());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[4]);
             // 护照号
             cell = row.createCell(5);
             cell.setCellValue(employeeReports.get(i).getPassportNo());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[5]);
             // 籍贯
             cell = row.createCell(6);
             cell.setCellValue(employeeReports.get(i).getNativePlace());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[6]);
             // 生日
             cell = row.createCell(7);
             cell.setCellValue(employeeReports.get(i).getBirthday());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[7]);
             // 属相
             cell = row.createCell(8);
             cell.setCellValue(employeeReports.get(i).getZodiac());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[8]);
             // 入职时间
             cell = row.createCell(9);
             cell.setCellValue(employeeReports.get(i).getTimeOfEntry());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[9]);
             // 离职类型
             cell = row.createCell(10);
             cell.setCellValue(employeeReports.get(i).getTypeOfTurnover());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[10]);
             // 离职原因
             cell = row.createCell(11);
             cell.setCellValue(employeeReports.get(i).getReasonsForLeaving());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[11]);
             // 离职时间
             cell = row.createCell(12);
             cell.setCellValue(employeeReports.get(i).getResignationTime());
+            //为每个单元格设置模板样式
+            cell.setCellStyle(cellStyles[12]);
         }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

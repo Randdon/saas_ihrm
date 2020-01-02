@@ -1,4 +1,4 @@
-package com.ihrm.company.session.config;
+package com.ihrm.company.shiro.config;
 
 import com.zhouyuan.saas.ihrm.shiro.realm.IhrmRealm;
 import com.zhouyuan.saas.ihrm.shiro.session.IhrmShiroSessionManager;

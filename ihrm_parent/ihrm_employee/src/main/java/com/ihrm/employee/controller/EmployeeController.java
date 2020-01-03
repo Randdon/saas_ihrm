@@ -241,6 +241,12 @@ public class EmployeeController extends BaseController {
         //从db中获取构成表单的数据
         List<EmployeeReportResult> employeeReports = userCompanyPersonalService.findEmployeeReport(month+"%",companyId);
 
+        /**
+         * SXSSFWorkbook可以处理有百万条数量级的excel报表导出，其原理是当内存中创建的对象超过阈值时（此处设置的是200），
+         * 便会将内存中的对象以xml的形式写入到磁盘临时空间（windows下可用win+r，输入%temp%来看生成的临时xml）中，
+         * 以减轻内存的负担，防止出现oom，但是磁盘io的速度远低于内存，
+         * 所以如果当数据量更大以至于写入磁盘的速度跟不上内存中对象增加的速度并且超过了内存大小的时候，仍然有可能会报oom错误
+         */
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(200);
         //获取模板表单
         SXSSFSheet sheet = sxssfWorkbook.createSheet();

@@ -12,6 +12,10 @@ import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
 import com.zhouyuan.saas.ihrm.utils.DownloadUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -215,7 +219,7 @@ public class EmployeeController extends BaseController {
      * @param month 月份 格式：2018-02
      * @throws IOException
      */
-    @RequestMapping(value = "/export/{month}", method = RequestMethod.GET)
+/*    @RequestMapping(value = "/export/{month}", method = RequestMethod.GET)
     public void export(@PathVariable(name = "month") String month) throws Exception {
         //从db中获取构成表单的数据
         List<EmployeeReportResult> employeeReports = userCompanyPersonalService.findEmployeeReport(month+"%",companyId);
@@ -225,5 +229,73 @@ public class EmployeeController extends BaseController {
         //构造excel导出工具类并通过工具类下载excel报表
         ExcelExportUtil excelExportUtil = new ExcelExportUtil(EmployeeReportResult.class, 2, 2);
         excelExportUtil.export(response,classPathResource.getInputStream(),employeeReports,month+"人事报表.xlsx");
+    }*/
+
+    /**
+     * excel表单导出
+     * @param month 月份 格式：2018-02
+     * @throws IOException
+     */
+    @RequestMapping(value = "/export/{month}", method = RequestMethod.GET)
+    public void export(@PathVariable(name = "month") String month) throws IOException {
+        //从db中获取构成表单的数据
+        List<EmployeeReportResult> employeeReports = userCompanyPersonalService.findEmployeeReport(month+"%",companyId);
+
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(200);
+        //获取模板表单
+        SXSSFSheet sheet = sxssfWorkbook.createSheet();
+        SXSSFRow row;
+        SXSSFCell cell ;
+        //插入数据到表单，每个employeeReport对象即是表单中一行数据，employeeReports对象中的每个字段即是每一行中的每个单元格的数据值
+        for (int j = 0; j < 10000; j++) {
+            for (int i = 0; i < employeeReports.size(); i++) {
+                //创建行
+                row = sheet.createRow(j*employeeReports.size() + i);
+                // 编号
+                cell = row.createCell(0);
+                cell.setCellValue(employeeReports.get(i).getUserId());
+                // 姓名
+                cell = row.createCell(1);
+                cell.setCellValue(employeeReports.get(i).getUsername());
+                // 手机
+                cell = row.createCell(2);
+                cell.setCellValue(employeeReports.get(i).getMobile());
+                // 最高学历
+                cell = row.createCell(3);
+                cell.setCellValue(employeeReports.get(i).getTheHighestDegreeOfEducation());
+                // 国家地区
+                cell = row.createCell(4);
+                cell.setCellValue(employeeReports.get(i).getNationalArea());
+                // 护照号
+                cell = row.createCell(5);
+                cell.setCellValue(employeeReports.get(i).getPassportNo());
+                // 籍贯
+                cell = row.createCell(6);
+                cell.setCellValue(employeeReports.get(i).getNativePlace());
+                // 生日
+                cell = row.createCell(7);
+                cell.setCellValue(employeeReports.get(i).getBirthday());
+                // 属相
+                cell = row.createCell(8);
+                cell.setCellValue(employeeReports.get(i).getZodiac());
+                // 入职时间
+                cell = row.createCell(9);
+                cell.setCellValue(employeeReports.get(i).getTimeOfEntry());
+                // 离职类型
+                cell = row.createCell(10);
+                cell.setCellValue(employeeReports.get(i).getTypeOfTurnover());
+                // 离职原因
+                cell = row.createCell(11);
+                cell.setCellValue(employeeReports.get(i).getReasonsForLeaving());
+                // 离职时间
+                cell = row.createCell(12);
+                cell.setCellValue(employeeReports.get(i).getResignationTime());
+            }
+
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        sxssfWorkbook.write(outputStream);
+        //下载报表
+        DownloadUtils.download(outputStream,response,month+"月人事报表.xlsx");
     }
 }

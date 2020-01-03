@@ -232,7 +232,7 @@ public class EmployeeController extends BaseController {
     }*/
 
     /**
-     * excel表单导出
+     * 百万数据excel表单导出，SXSSFWorkbook无法应用模板样式
      * @param month 月份 格式：2018-02
      * @throws IOException
      */

@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 /**
- * @description: 利用apache poi解析一个excel
+ * @description: 利用apache poi的用户模型解析一个excel，该模型无法处理百万量级的excel，会oom
  * @author: yuand
  * @create: 2019-12-30 10:45
  **/

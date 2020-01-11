@@ -14,11 +14,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -174,5 +176,14 @@ public class UserService {
             user.setDepartmentName(department.getName());
         });
         userDao.saveAll(users);
+    }
+
+    public String uploadUserPhoto(String id, MultipartFile file) throws IOException {
+        User user = userDao.findById(id).get();
+        byte[] bytes = Base64.getDecoder().decode(file.getBytes());
+        String imgUrl = "data:image/png;base64," + new String(bytes);
+        user.setStaffPhoto(imgUrl);
+        userDao.save(user);
+        return imgUrl;
     }
 }

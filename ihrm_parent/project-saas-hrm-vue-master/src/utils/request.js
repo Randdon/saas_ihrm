@@ -9,7 +9,7 @@ const instance = axios.create({
   timeout: 5000 // request timeout
 })
 
-const ok = "10000";
+const ok = '10000'
 
 // request interceptor
 instance.interceptors.request.use(
@@ -22,7 +22,7 @@ instance.interceptors.request.use(
   },
   error => {
     // Do something with request error
-    Message.error("对不起，出错了")
+    Message.error('对不起，出错了')
     console.log(error) // for debug
     Promise.reject(error)
   }
@@ -47,14 +47,15 @@ instance.interceptors.response.use(
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })
         return Promise.reject(new Error('token expired'))
-      }else if (errCode != ok) {
+        // eslint-disable-next-line eqeqeq
+      } else if (errCode != ok) {
         Message({
           message: res.message,
           type: 'error',
           duration: 5 * 1000
         })
       }
-      return response;
+      return response
     } else {
       return response
     }
@@ -151,6 +152,23 @@ export const createImgAPI = (url, method, data) => {
       return ret
     }
   ]
+  return instance({
+    url,
+    method,
+    ...config
+  })
+}
+export const createImgUpAPI = (url, method, data) => {
+
+  let config = {}
+  config.data = data
+  config.headers = {
+    'Cache-Control': 'no-cache'
+    // 'Content-Type': 'multipart/form-data'
+    // 'Content-Type': 'multipart/form-data;boundary = ' + new Date().getTime()
+  }
+  // config.responseType = 'blob'
+  config.transformRequest = data
   return instance({
     url,
     method,

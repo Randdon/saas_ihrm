@@ -21,7 +21,7 @@ import { getToken } from '@/utils/auth'
 export default {
   data: function() {
     return {
-      imgs: '',
+      // imgs: '',
       imgPhone: '',
       textTip: '',
       uploadDisabled: '',

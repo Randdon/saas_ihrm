@@ -12,7 +12,7 @@ module.exports = {
     proxyTable: {
       //企业信息请求的远程服务
       '/api/company': {
-        target: 'http://localhost:8185/company/',
+        target: 'http://localhost:8188/company/',
         changeOrigin: true,
         pathRewrite: {
           '^/api/company': ''
@@ -25,10 +25,17 @@ module.exports = {
        * 即将匹配到^/api/sys'的替换为空，所以最终路径就是:http://localhost:8186/sys/user
        */
       '/api/sys': {
-        target: 'http://localhost:8186/sys/',
+        target: 'http://localhost:8187/sys/',
         changeOrigin: true,
         pathRewrite: {
           '^/api/sys': ''
+        },
+        '/api/employees': {
+          target: 'http://localhost:8186/employees/',
+          changeOrigin: true,
+          pathRewrite: {
+            '^/api/employees': ''
+          }
         }
       }
     },

@@ -15,6 +15,7 @@
         <module>shiro_springboot</module>
         <module>ihrm_eureka</module>
         <module>poi_demo</module>
+        <module>qiniu_demo</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -6,6 +6,7 @@ import com.ihrm.domain.system.User;
 import com.ihrm.system.DepartmentFeignClient;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,8 +181,9 @@ public class UserService {
 
     public String uploadUserPhoto(String id, MultipartFile file) throws IOException {
         User user = userDao.findById(id).get();
-        byte[] bytes = Base64.getDecoder().decode(file.getBytes());
-        String imgUrl = "data:image/png;base64," + new String(bytes);
+
+        String imgUrl = Base64.encode(file.getBytes());
+        imgUrl = "data:image/png;base64," + imgUrl;
         user.setStaffPhoto(imgUrl);
         userDao.save(user);
         return imgUrl;

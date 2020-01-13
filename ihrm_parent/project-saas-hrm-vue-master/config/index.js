@@ -29,13 +29,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/api/sys': ''
-        },
-        '/api/employees': {
-          target: 'http://localhost:8186/employees/',
-          changeOrigin: true,
-          pathRewrite: {
-            '^/api/employees': ''
-          }
+        }
+      },
+      '/api/employees': {
+        target: 'http://localhost:8186/employees/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/employees': ''
         }
       }
     },

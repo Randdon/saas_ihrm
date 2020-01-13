@@ -321,7 +321,7 @@ public class UserController extends BaseController {
         return value;
     }
 
-    @RequestMapping(name = "/user/upload/{id}")
+    @RequestMapping(value = "/user/upload/{id}",method = RequestMethod.POST)
     public Result upload(@PathVariable(value = "id") String id, @RequestParam(name = "file") MultipartFile file) throws IOException {
         //1.调用service保存图片（获取到图片的访问地址（dataUrl | http地址））
         String imgUrl = userService.uploadUserPhoto(id,file);

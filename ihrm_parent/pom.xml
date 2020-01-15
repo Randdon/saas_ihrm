@@ -16,6 +16,7 @@
         <module>ihrm_eureka</module>
         <module>poi_demo</module>
         <module>qiniu_demo</module>
+        <module>jasper_demo</module>
     </modules>
 
     <packaging>pom</packaging>

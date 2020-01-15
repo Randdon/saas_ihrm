@@ -19,6 +19,13 @@ public class QiniuDemoTest {
 
     /**
      * 将图片上传到七牛云服务
+     *      1.更新用户图片信息（用户id=key）
+     *      2.访问图片
+     *          存储空间分配的域名：http://q41bl82gz.bkt.clouddn.com/，加上上传的文件名后访问该链接即可查看图片，
+     *          即http://q41bl82gz.bkt.clouddn.com/zhouTest
+     *          更新图片之后：访问的时候，在请求连接后添加上时间戳或随机数，就可以刷新看到更新后的图片，不然看到的还是更新前的图片，如：
+     *          http://q41bl82gz.bkt.clouddn.com/zhouTest?test=1234
+     * 参见demo：https://developer.qiniu.com/kodo/sdk/1239/java#server-upload
      *
      */
     @Test
@@ -35,9 +42,12 @@ public class QiniuDemoTest {
         String localFilePath = "C:\\Users\\yuand\\Pictures\\Saved Pictures\\th.jpg";
         //设置存入到存储空间的文件名，默认不指定key的情况下，以文件内容的hash值作为文件名
         String key = "zhouTest";
+        //身份认证
         Auth auth = Auth.create(accessKey, secretKey);
-        String upToken = auth.uploadToken(bucket);
+        //指定覆盖上传，添加传参-文件名以指定上传方式为覆盖上传，即支持更新操作
+        String upToken = auth.uploadToken(bucket,key);
         try {
+            //上传
             Response response = uploadManager.put(localFilePath, key, upToken);
             //解析上传成功的结果
             DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);

@@ -8,6 +8,7 @@ import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
+import com.zhouyuan.saas.ihrm.utils.QiniuUploadUtil;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -179,11 +180,35 @@ public class UserService {
         userDao.saveAll(users);
     }
 
-    public String uploadUserPhoto(String id, MultipartFile file) throws IOException {
+    /**
+     * 上传用户头像到数据库-dataUrl方式
+     * @param id
+     * @param file
+     * @return
+     * @throws IOException
+     */
+/*    public String uploadUserPhoto(String id, MultipartFile file) throws IOException {
         User user = userDao.findById(id).get();
 
         String imgUrl = Base64.encode(file.getBytes());
         imgUrl = "data:image/png;base64," + imgUrl;
+        user.setStaffPhoto(imgUrl);
+        userDao.save(user);
+        return imgUrl;
+    }*/
+
+    /**
+     * 上传用户头像到七牛云
+     * @param id
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public String uploadUserPhoto(String id, MultipartFile file) throws IOException {
+        User user = userDao.findById(id).get();
+
+        String imgUrl = new QiniuUploadUtil().upload(id,file.getBytes());
+
         user.setStaffPhoto(imgUrl);
         userDao.save(user);
         return imgUrl;

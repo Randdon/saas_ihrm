@@ -17,6 +17,7 @@
         <module>poi_demo</module>
         <module>qiniu_demo</module>
         <module>jasper_demo</module>
+        <module>jasper_springboot</module>
     </modules>
 
     <packaging>pom</packaging>

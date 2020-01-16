@@ -43,9 +43,9 @@ public class QiniuDemoTest {
         String secretKey = "FtSvmDWnNpx7TlFp4zMHhPm_lfSOOoUWyuJUXdcz";
         String bucket = "ihrm-zhou";
         //图片路径
-        String localFilePath = "C:\\Users\\yuand\\Pictures\\Saved Pictures\\th.jpg";
+        String localFilePath = "D:\\projects\\zhouyuan\\saas_ihrm\\ihrm_parent\\poi_demo\\test\\hammer.png";
         //设置存入到存储空间的文件名，默认不指定key的情况下，以文件内容的hash值作为文件名
-        String key = "zhouTest";
+        String key = "hammer";
         //身份认证
         Auth auth = Auth.create(accessKey, secretKey);
         //指定覆盖上传，添加传参-文件名以指定上传方式为覆盖上传，即支持更新操作

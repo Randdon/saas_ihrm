@@ -118,7 +118,7 @@ public class JasperController {
     }
 
     /**
-     * 基于JDBC数据源的形式填充数据到jasper生成的模板文件中
+     * 基于JDBC数据源的形式填充数据到jasper生成的模板文件中，但涉及数据库连接关闭和数据泄露的问题
      * @param request
      * @param response
      * @throws IOException

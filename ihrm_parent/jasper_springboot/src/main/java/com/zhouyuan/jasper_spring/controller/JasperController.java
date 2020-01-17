@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,4 +113,61 @@ public class JasperController {
         }
     }
 
+    /**
+     * 基于JDBC数据源的形式填充数据到jasper生成的模板文件中
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(value = "/testJasper/fillDataByJdbc")
+    public void fillDataByJdbc(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        ServletOutputStream outputStream = null;
+        InputStream inputStream = null;
+        //1.引入pdf模板jasper文件
+        Resource resource = new ClassPathResource("/jasperTemplates/fillDataByJdbc.jasper");
+        try {
+            inputStream = resource.getInputStream();
+            outputStream = response.getOutputStream();
+
+            /**
+             * 2.用数据库连接作为参数创建JasperPrint,向jasper文件中填充数据
+             */
+            Connection connection = getConnection();
+            JasperPrint print = JasperFillManager.
+                    fillReport(inputStream, new HashMap<>(), connection);
+            //3.将JasperPrint以PDF流的形式输出
+            JasperExportManager.exportReportToPdfStream(print,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != outputStream){
+                outputStream.close();
+            }
+            if (null != inputStream){
+                inputStream.close();
+            }
+        }
+    }
+
+    /**
+     * 获取数据库连接
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/ihrm?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC",
+                "root",
+                "root1234");
+        return connection;
+    }
 }

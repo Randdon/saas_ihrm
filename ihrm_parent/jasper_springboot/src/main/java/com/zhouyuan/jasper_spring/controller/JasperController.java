@@ -132,10 +132,13 @@ public class JasperController {
 
             /**
              * 2.用数据库连接作为参数创建JasperPrint,向jasper文件中填充数据
+             * 添加数据库查询条件参数
              */
+            Map map = new HashMap<>();
+            map.put("companyId","1");
             Connection connection = getConnection();
             JasperPrint print = JasperFillManager.
-                    fillReport(inputStream, new HashMap<>(), connection);
+                    fillReport(inputStream, map, connection);
             //3.将JasperPrint以PDF流的形式输出
             JasperExportManager.exportReportToPdfStream(print,outputStream);
         } catch (JRException e) {

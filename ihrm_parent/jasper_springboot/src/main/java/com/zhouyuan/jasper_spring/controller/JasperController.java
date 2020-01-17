@@ -5,8 +5,7 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -205,6 +204,47 @@ public class JasperController {
     }
 
     /**
+     * 基于JavaBean数据源的形式填充数据到jasper生成的模板文件中
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(value = "/testJasper/groupBy")
+    public void groupBy(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        ServletOutputStream outputStream = null;
+        InputStream inputStream = null;
+        //1.引入pdf模板jasper文件
+        Resource resource = new ClassPathResource("/jasperTemplates/GroupBy.jasper");
+        try {
+            inputStream = resource.getInputStream();
+            outputStream = response.getOutputStream();
+
+            /**
+             * 2.用Javabean的jasper数据源对象作为参数创建JasperPrint,向jasper文件中填充数据
+             */
+            Map map = new HashMap<>();
+            List<User> userList = getUserList();
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(userList);
+            JasperPrint print = JasperFillManager.
+                    fillReport(inputStream, map, dataSource);
+            //3.将JasperPrint以PDF流的形式输出
+            JasperExportManager.exportReportToPdfStream(print,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != outputStream){
+                outputStream.close();
+            }
+            if (null != inputStream){
+                inputStream.close();
+            }
+        }
+    }
+
+    /**
      * 获取数据库连接
      * @return
      * @throws ClassNotFoundException
@@ -228,11 +268,20 @@ public class JasperController {
         for (int i = 0; i < 10; i++) {
             users.add(new User(
                     i+"",
-                    "user"+i,
+                    "marxFollower"+i,
                     "Marx",
                     "Paris Commune",
                     "1884000000"+i));
         }
+        for (int i = 0; i < 5; i++) {
+            users.add(new User(
+                    i+"",
+                    "maoFollower"+i,
+                    "Mao",
+                    "Cultrue Revolution",
+                    "1949000000"+i));
+        }
         return users;
     }
+
 }

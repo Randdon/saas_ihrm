@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @description: Jasper整合Spring boot的controller测试
@@ -64,4 +65,49 @@ public class JasperController {
             }
         }
     }
+
+    /**
+     * 基于parameters以Map的形式填充数据到jasper生成的模板文件中
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(value = "/testJasper/fillDataByParams")
+    public void fillDataByParams(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        ServletOutputStream outputStream = null;
+        InputStream inputStream = null;
+        //1.引入pdf模板jasper文件
+        Resource resource = new ClassPathResource("/jasperTemplates/fillDataByParams.jasper");
+        try {
+            inputStream = resource.getInputStream();
+            outputStream = response.getOutputStream();
+
+            /**
+             * 2.创建JasperPrint,向jasper文件中填充数据
+             * 设置参数 参数的key 要严格等于 用jaspersoft Studio设计的模板中使用的parameters参数的name
+             */
+            Map map = new HashMap<>(4);
+            map.put("username","zhouyuan");
+            map.put("company","Paris Commune");
+            map.put("department","Marx");
+            map.put("mobile","12874569577");
+            JasperPrint print = JasperFillManager.
+                    fillReport(inputStream, map, new JREmptyDataSource());
+            //3.将JasperPrint以PDF流的形式输出
+            JasperExportManager.exportReportToPdfStream(print,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != outputStream){
+                outputStream.close();
+            }
+            if (null != inputStream){
+                inputStream.close();
+            }
+        }
+    }
+
 }

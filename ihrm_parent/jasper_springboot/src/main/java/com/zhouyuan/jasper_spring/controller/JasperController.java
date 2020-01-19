@@ -1,6 +1,7 @@
 package com.zhouyuan.jasper_spring.controller;
 
 import com.zhouyuan.jasper_spring.entity.User;
+import com.zhouyuan.jasper_spring.entity.UserCount;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.core.io.ClassPathResource;
@@ -245,6 +246,47 @@ public class JasperController {
     }
 
     /**
+     * 基于JavaBean数据源的形式填充数据到jasper生成的模板文件中
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(value = "/testJasper/chart")
+    public void chart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        ServletOutputStream outputStream = null;
+        InputStream inputStream = null;
+        //1.引入pdf模板jasper文件
+        Resource resource = new ClassPathResource("/jasperTemplates/chart.jasper");
+        try {
+            inputStream = resource.getInputStream();
+            outputStream = response.getOutputStream();
+
+            /**
+             * 2.用Javabean的jasper数据源对象作为参数创建JasperPrint,向jasper文件中填充数据
+             */
+            Map map = new HashMap<>();
+            List<UserCount> userList = getUserCountList();
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(userList);
+            JasperPrint print = JasperFillManager.
+                    fillReport(inputStream, map, dataSource);
+            //3.将JasperPrint以PDF流的形式输出
+            JasperExportManager.exportReportToPdfStream(print,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != outputStream){
+                outputStream.close();
+            }
+            if (null != inputStream){
+                inputStream.close();
+            }
+        }
+    }
+
+    /**
      * 获取数据库连接
      * @return
      * @throws ClassNotFoundException
@@ -281,6 +323,23 @@ public class JasperController {
                     "Cultrue Revolution",
                     "1949000000"+i));
         }
+        return users;
+    }
+
+    /**
+     * 构造用来填充有饼状图的pdf的JavaBean假数据
+     * @return
+     */
+    public List<UserCount> getUserCountList(){
+        ArrayList<UserCount> users = new ArrayList<>(4);
+        UserCount softStone = new UserCount("softStone", 800L);
+        UserCount huawei = new UserCount("huawei", 1000L);
+        UserCount ali = new UserCount("alibaba",2000L);
+        UserCount revolution = new UserCount("格勒",5000L);
+        users.add(softStone);
+        users.add(huawei);
+        users.add(ali);
+        users.add(revolution);
         return users;
     }
 

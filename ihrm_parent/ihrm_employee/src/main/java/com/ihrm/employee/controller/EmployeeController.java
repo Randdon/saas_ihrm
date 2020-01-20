@@ -10,6 +10,7 @@ import com.zhouyuan.saas.ihrm.entity.ResultCode;
 import com.zhouyuan.saas.ihrm.poi.ExcelExportUtil;
 import com.zhouyuan.saas.ihrm.utils.BeanMapUtils;
 import com.zhouyuan.saas.ihrm.utils.DownloadUtils;
+import net.sf.jasperreports.engine.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFCell;
@@ -22,12 +23,16 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -304,5 +309,48 @@ public class EmployeeController extends BaseController {
         sxssfWorkbook.write(outputStream);
         //下载报表
         DownloadUtils.download(outputStream,response,month+"月人事报表.xlsx");
+    }
+
+    /**
+     * 导出员工信息pdf
+     * @param id
+     * @throws IOException
+     */
+    @RequestMapping(value = "/{id}/pdf",method = RequestMethod.GET)
+    public void pdf(@PathVariable String id) throws IOException {
+
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            //1.引入jasper文件
+            Resource resource = new ClassPathResource("/jasper_template/profile.jasper");
+            inputStream = resource.getInputStream();
+            //2.构造数据
+            Map params = new HashMap(16);
+            //a.用户详情数据
+            UserCompanyPersonal personal = userCompanyPersonalService.findById(id);
+            //b.用户岗位信息数据
+            UserCompanyJobs jobs = userCompanyJobsService.findById(id);
+
+            Map<String, Object> personalMap = BeanMapUtils.beanToMap(personal);
+            Map<String, Object> jobsMap = BeanMapUtils.beanToMap(jobs);
+            params.putAll(personalMap);
+            params.putAll(jobsMap);
+
+            //填充pdf模板
+            JasperPrint jasperPrint = JasperFillManager.fillReport(inputStream, params, new JREmptyDataSource());
+            outputStream = response.getOutputStream();
+            //输出pdf
+            JasperExportManager.exportReportToPdfStream(jasperPrint,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        }finally {
+            if (null != inputStream){
+                inputStream.close();
+            }
+            if (null != outputStream){
+                outputStream.close();
+            }
+        }
     }
 }

@@ -205,7 +205,7 @@ public class JasperController {
     }
 
     /**
-     * 基于JavaBean数据源的形式填充数据到jasper生成的模板文件中
+     * 基于JavaBean数据源的形式填充数据到jasper生成的模板文件中——分组报表
      * @param request
      * @param response
      * @throws IOException
@@ -246,7 +246,7 @@ public class JasperController {
     }
 
     /**
-     * 基于JavaBean数据源的形式填充数据到jasper生成的模板文件中
+     * 基于JavaBean数据源的形式填充饼状图数据到jasper生成的模板文件中
      * @param request
      * @param response
      * @throws IOException
@@ -286,6 +286,47 @@ public class JasperController {
         }
     }
 
+    /**
+     * 父子报表
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping(value = "/testJasper/parent")
+    public void parent(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        ServletOutputStream outputStream = null;
+        InputStream inputStream = null;
+        //1.引入pdf模板jasper文件
+        Resource resource = new ClassPathResource("/jasperTemplates/parent.jasper");
+        try {
+            inputStream = resource.getInputStream();
+            outputStream = response.getOutputStream();
+
+            /**
+             * 2.用Javabean的jasper数据源对象作为参数创建JasperPrint,向jasper文件中填充数据
+             */
+            Map map = new HashMap<>();
+            List<UserCount> userList = getUserCountList();
+            ClassPathResource subResource = new ClassPathResource("/jasperTemplates/child.jasper");
+            map.put("subPath",subResource.getFile().getPath());
+            map.put("subList",userList);
+            JasperPrint print = JasperFillManager.fillReport(inputStream, map, new JREmptyDataSource());
+            //3.将JasperPrint以PDF流的形式输出
+            JasperExportManager.exportReportToPdfStream(print,outputStream);
+        } catch (JRException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != outputStream){
+                outputStream.close();
+            }
+            if (null != inputStream){
+                inputStream.close();
+            }
+        }
+    }
     /**
      * 获取数据库连接
      * @return

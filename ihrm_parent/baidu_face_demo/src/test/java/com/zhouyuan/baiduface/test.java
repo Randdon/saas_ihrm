@@ -26,6 +26,11 @@ public class test {
         client = new AipFace("18325919",
                 "x8yItPvFygrLvvxhzL0PXPRI", "3XAiGjFQ6vt2HUhESGbvGv0Kg3zwuQq5");
     }
+
+    /**
+     * 人脸注册：将用户的人脸图片上传到百度云人脸库你指定的群组里
+     * @throws IOException
+     */
     @Test
     public void faceRegisterTest() throws IOException {
 
@@ -60,7 +65,7 @@ public class test {
     public void faceDetect() throws IOException {
         //构造图片
         String path = "E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\002.png";
-        //上传的图片  两种格式 ： url地址，Base64字符串形式
+        //待检测的图片  两种格式 ： url地址，Base64字符串形式
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         String photoData = Base64Util.encode(bytes);
         /**
@@ -70,6 +75,29 @@ public class test {
          * 参数三：hashMap中的基本参数配置（null：使用默认配置）
          */
         JSONObject res = client.detect(photoData, "BASE64", null);
+        System.out.println(res.toString(2));
+    }
+
+    /**
+     * 人脸搜索：根据用户上传的图片和指定人脸库中的所有人脸进行比较，获取相似度最高的一个或者某几个的评分
+     * 说明：返回值（数组，按相似度倒序排序，我们只获取相似度最高的那一条数据）
+     * score：相似度评分（百度云推荐80分以上可以认为是同一个人）
+     * @throws IOException
+     */
+    @Test
+    public void faceSearch() throws IOException {
+        //构造图片
+        String path = "E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\cat.jpg";
+        //待检测的图片  两种格式 ： url地址，Base64字符串形式
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        String photoData = Base64Util.encode(bytes);
+        /**
+         * 调用api方法完成人脸搜索
+         * 参数一：（图片的url或者图片的Base64字符串），
+         * 参数二：图片形式（URL,BASE64）
+         * 参数三：hashMap中的基本参数配置（null：使用默认配置）
+         */
+        JSONObject res = client.search(photoData, "BASE64", "zhouyuanTest",null);
         System.out.println(res.toString(2));
     }
 }

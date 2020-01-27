@@ -41,7 +41,7 @@ public class test {
         //活体检测
         options.put("liveness_control", "LOW");
         //3.构造图片
-        String path = "D:\\projects\\zhouyuan\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\001.png";
+        String path = "E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\001.png";
         //上传的图片  两种格式 ： url地址，Base64字符串形式
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         String photoData = Base64Util.encode(bytes);
@@ -54,7 +54,37 @@ public class test {
          * 参数五：hashMap中的基本参数配置
          */
         JSONObject jsonObject = client.addUser(photoData, "BASE64", "zhouyuanTest", "10000", options);
-        System.out.println(jsonObject);
+        System.out.println(jsonObject.toString(2));
+    }
+
+    /**
+     * 人脸更新
+     * @throws IOException
+     */
+    @Test
+    public void faceUpdateTest() throws IOException {
+
+        //2.参数设置
+        HashMap<String,String> options = new HashMap<>(2);
+        //图片质量  NONE  LOW  NORMAL，HIGH
+        options.put("quality_control", "NORMAL");
+        //活体检测
+        options.put("liveness_control", "LOW");
+        //3.构造图片
+        String path = "E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\002.png";
+        //上传的图片  两种格式 ： url地址，Base64字符串形式
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        String photoData = Base64Util.encode(bytes);
+        /**
+         * 4.调用api方法完成人脸更新
+         * 参数一：（图片的url或者图片的Base64字符串），
+         * 参数二：图片形式（URL,BASE64）
+         * 参数三：组ID（自定义字符串）
+         * 参数四：用户ID（业务意义上的用户id）
+         * 参数五：hashMap中的基本参数配置
+         */
+        JSONObject jsonObject = client.updateUser(photoData, "BASE64", "zhouyuanTest", "10000", options);
+        System.out.println(jsonObject.toString(2));
     }
 
     /**

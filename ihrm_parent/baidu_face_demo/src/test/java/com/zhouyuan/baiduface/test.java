@@ -3,6 +3,7 @@ package com.zhouyuan.baiduface;
 import com.baidu.aip.face.AipFace;
 import com.baidu.aip.util.Base64Util;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,11 +19,16 @@ import java.util.HashMap;
  **/
 public class test {
 
+    private AipFace client;
+    @Before
+    public void init(){
+        //1.创建java代码和百度云交互的client对象
+        client = new AipFace("18325919",
+                "x8yItPvFygrLvvxhzL0PXPRI", "3XAiGjFQ6vt2HUhESGbvGv0Kg3zwuQq5");
+    }
     @Test
     public void faceRegisterTest() throws IOException {
-        //1.创建java代码和百度云交互的client对象
-        AipFace client = new AipFace("18325919",
-                "x8yItPvFygrLvvxhzL0PXPRI", "3XAiGjFQ6vt2HUhESGbvGv0Kg3zwuQq5");
+
         //2.参数设置
         HashMap<String,String> options = new HashMap<>(2);
         //图片质量  NONE  LOW  NORMAL，HIGH
@@ -44,5 +50,26 @@ public class test {
          */
         JSONObject jsonObject = client.addUser(photoData, "BASE64", "zhouyuanTest", "10000", options);
         System.out.println(jsonObject);
+    }
+
+    /**
+     * 人脸检测：判断图片中是否具有面部信息
+     * @throws IOException
+     */
+    @Test
+    public void faceDetect() throws IOException {
+        //构造图片
+        String path = "E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\002.png";
+        //上传的图片  两种格式 ： url地址，Base64字符串形式
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        String photoData = Base64Util.encode(bytes);
+        /**
+         * 调用api方法完成人脸检测
+         * 参数一：（图片的url或者图片的Base64字符串），
+         * 参数二：图片形式（URL,BASE64）
+         * 参数三：hashMap中的基本参数配置（null：使用默认配置）
+         */
+        JSONObject res = client.detect(photoData, "BASE64", null);
+        System.out.println(res.toString(2));
     }
 }

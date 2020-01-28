@@ -17,7 +17,7 @@ import java.util.HashMap;
  * @author: yuand
  * @create: 2020-01-21 17:29
  **/
-public class test {
+public class BaiduAiFaceTest {
 
     private AipFace client;
     @Before
@@ -129,5 +129,12 @@ public class test {
          */
         JSONObject res = client.search(photoData, "BASE64", "zhouyuanTest",null);
         System.out.println(res.toString(2));
+    }
+
+    @Test
+    public void dataUrlTest() throws IOException {
+        String imgUrl = Base64Util.encode(Files.readAllBytes(Paths.get("E:\\SchoolWork\\program\\projects\\ihrm\\saas_ihrm\\ihrm_parent\\baidu_face_demo\\src\\main\\resources\\facePhoto\\cat.jpg")));
+        imgUrl = "data:image/jpg;base64," + imgUrl;
+        System.out.println(imgUrl);
     }
 }

@@ -36,3 +36,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:6868/eureka/
+
+ai:
+  appId: 18325919
+  apiKey: x8yItPvFygrLvvxhzL0PXPRI
+  secretKey: 3XAiGjFQ6vt2HUhESGbvGv0Kg3zwuQq5
+  imageType: BASE64
+  groupId: zhouyuanTest
+qr:
+  url: https://localhost:8080/#/facelogin

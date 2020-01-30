@@ -90,4 +90,15 @@ public class BaiduAiUtil {
         }
         return null;
     }
+
+    /**
+     * 检测人脸是否已存在
+     * @param userId
+     * @return
+     */
+    public boolean faceExist(String userId){
+        JSONObject res = client.getUser(userId, groupId, null);
+        int error_code = res.getInt("error_code");
+        return error_code == 0;
+    }
 }

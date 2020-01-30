@@ -6,6 +6,7 @@ import com.ihrm.domain.system.User;
 import com.ihrm.system.DepartmentFeignClient;
 import com.ihrm.system.dao.RoleDao;
 import com.ihrm.system.dao.UserDao;
+import com.ihrm.system.utils.BaiduAiUtil;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.zhouyuan.saas.ihrm.utils.IdWorker;
 import com.zhouyuan.saas.ihrm.utils.QiniuUploadUtil;
@@ -197,6 +198,8 @@ public class UserService {
         return imgUrl;
     }*/
 
+    @Autowired
+    private BaiduAiUtil baiduAiUtil;
     /**
      * 上传用户头像到七牛云
      * @param id
@@ -211,6 +214,17 @@ public class UserService {
 
         user.setStaffPhoto(imgUrl);
         userDao.save(user);
+
+        //注册用户头像到百度云人脸库
+        String imgBase64 = Base64.encode(file.getBytes());
+        boolean faceExist = baiduAiUtil.faceExist(id);
+        if (faceExist){
+            //更新
+            baiduAiUtil.faceUpdate(id,imgBase64);
+        }else {
+            //注册
+            baiduAiUtil.faceRegister(id,imgBase64);
+        }
         return imgUrl;
     }
 }

@@ -123,6 +123,7 @@ public class ShiroConfig {
         //anon表示当前请求地址可以匿名访问
         filterMap.put("/sys/login","anon");
         filterMap.put("/autherror","anon");
+        filterMap.put("/employees/*/pdf","anon");
         //authc表示当前请求地址必须认证之后可以访问
         filterMap.put("/**","authc");
         //过滤器也可以完成url鉴权，但本例中使用另一种方式：shiro注解来完成

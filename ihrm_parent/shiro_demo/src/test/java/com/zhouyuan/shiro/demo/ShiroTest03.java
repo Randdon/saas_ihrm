@@ -58,7 +58,7 @@ public class ShiroTest03 {
 
     @Test
     public void hashmd5(){
-        String md5Hash = new Md5Hash("123456","zhangsan",3).toString();
+        String md5Hash = new Md5Hash("123456","lisi",3).toString();
         System.out.println(md5Hash);
     }
 }

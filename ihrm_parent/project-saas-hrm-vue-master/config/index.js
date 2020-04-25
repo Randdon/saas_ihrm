@@ -25,7 +25,7 @@ module.exports = {
        * 即将匹配到^/api/sys'的替换为空，所以最终路径就是:http://localhost:8186/sys/user
        */
       '/api/sys': {
-        target: 'http://localhost:8187/sys/',
+        target: 'http://localhost:8180/sys/',
         changeOrigin: true,
         pathRewrite: {
           '^/api/sys': ''

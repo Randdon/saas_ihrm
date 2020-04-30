@@ -1,9 +1,9 @@
 package com.zhouyuan.redis_demo.service.impl;
 
-//import com.zhouyuan.redis_demo.config.dbConfig.ReadDataSource;
-//import com.zhouyuan.redis_demo.config.dbConfig.WriteDataSource;
-import com.zhouyuan.redis_demo.config.mysql.DataSourceConfig;
-import com.zhouyuan.redis_demo.config.mysql.TargetDateSource;
+import com.zhouyuan.redis_demo.config.dbConfig.ReadDataSource;
+import com.zhouyuan.redis_demo.config.dbConfig.WriteDataSource;
+//import com.zhouyuan.redis_demo.config.mysql.DataSourceConfig;
+//import com.zhouyuan.redis_demo.config.mysql.TargetDateSource;
 import com.zhouyuan.redis_demo.dao.StudentDao;
 import com.zhouyuan.redis_demo.entity.Student;
 import com.zhouyuan.redis_demo.service.StudentService;
@@ -27,15 +27,15 @@ public class StudentServiceImpl implements StudentService {
     private StudentDao studentDao;
 
     @Override
-    @TargetDateSource(dataSource = DataSourceConfig.READ_DATASOURCE_KEY)
-//    @ReadDataSource
+//    @TargetDateSource(dataSource = DataSourceConfig.READ_DATASOURCE_KEY)
+    @ReadDataSource
     public List<Student> findAll() {
         return studentDao.findAll();
     }
 
     @Override
-//    @ReadDataSource
-    @TargetDateSource(dataSource = DataSourceConfig.READ_DATASOURCE_KEY)
+    @ReadDataSource
+//    @TargetDateSource(dataSource = DataSourceConfig.READ_DATASOURCE_KEY)
     public Student findById(Integer id) {
         Optional<Student> students = studentDao.findById(id);
         if (students.isPresent() && students.get() != null) {
@@ -46,8 +46,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-//    @WriteDataSource
-    @TargetDateSource(dataSource = DataSourceConfig.WRITE_DATASOURCE_KEY)
+    @WriteDataSource
+//    @TargetDateSource(dataSource = DataSourceConfig.WRITE_DATASOURCE_KEY)
     public Integer save(Student entity) throws Exception {
         if (entity.getId() != null) {
             Student perz = studentDao.saveAndFlush(entity);
